@@ -11,6 +11,8 @@ import { federalStates, ZipApiResponse } from "../types/global";
 import { EconomicEntities, Property } from "../types/property";
 import { propertyState } from "../Atoms";
 
+import { GrDocumentDownload } from "react-icons/gr";
+
 const Home: NextPage = () => {
   const [property, setProperty] = useRecoilState<Property>(propertyState);
 
@@ -250,6 +252,7 @@ const Home: NextPage = () => {
                 disabled={typeOfEconomicEntity === EconomicEntities.undeveloped}
                 onClick={() => {
                   setTypeOfEconomicEntity(EconomicEntities.undeveloped);
+                  setProperty({ ...property, economicEntityType: EconomicEntities.undeveloped });
                   //TODO: reset every value for the other two types
                 }}
               />
@@ -258,6 +261,7 @@ const Home: NextPage = () => {
                 disabled /* ={typeOfEconomicEntity === EconomicEntities.LandAndForestry} */
                 onClick={() => {
                   setTypeOfEconomicEntity(EconomicEntities.LandAndForestry);
+                  setProperty({ ...property, economicEntityType: EconomicEntities.LandAndForestry });
                   //TODO: reset every value for the other two types
                 }}
               />
@@ -266,6 +270,7 @@ const Home: NextPage = () => {
                 disabled /* ={typeOfEconomicEntity === EconomicEntities.built} */
                 onClick={() => {
                   setTypeOfEconomicEntity(EconomicEntities.built);
+                  setProperty({ ...property, economicEntityType: EconomicEntities.built });
                   //TODO: reset every value for the other two types
                 }}
               />
