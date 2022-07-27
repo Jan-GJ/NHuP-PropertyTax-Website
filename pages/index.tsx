@@ -10,8 +10,7 @@ import Input from "../components/Input";
 import { federalStates, ZipApiResponse } from "../types/global";
 import { EconomicEntities, Property } from "../types/property";
 import { propertyState } from "../Atoms";
-
-import { GrDocumentDownload } from "react-icons/gr";
+import { read, writeFile, utils } from "xlsx";
 
 const Home: NextPage = () => {
   const [property, setProperty] = useRecoilState<Property>(propertyState);
@@ -62,12 +61,17 @@ const Home: NextPage = () => {
   const [nameError, setNameError] = nameErrorState;
 
   const referenceState = useState<string>("");
+  const [reference, setReference] = referenceState;
+
   const referenceErrorState = useState<string>("");
   const referenceIsCorrectState = useState<boolean>(false);
 
   const [typeOfEconomicEntity, setTypeOfEconomicEntity] = useState<EconomicEntities>(EconomicEntities.none);
 
   const [canSelectTypeOfEconomicEntity, setCanSelectTypeOfEconomicEntity] = useState<boolean>(false);
+
+  const [selectedFile, setSelectedFile] = useState<File>();
+  const [isFilePicked, setIsFilePicked] = useState<boolean>(false);
 
   useEffect(() => {
     setProperty({
@@ -79,8 +83,9 @@ const Home: NextPage = () => {
       houseNumber: houseNumber,
       city: city,
       community: city,
+      reference: reference,
     });
-  }, [name, typeOfEconomicEntity, federalState, plz, street, houseNumber, city, setProperty]);
+  }, [name, typeOfEconomicEntity, federalState, plz, street, houseNumber, city, setProperty, reference]);
 
   useEffect(() => {
     const index = federalStates.indexOf(federalStateText);
@@ -135,7 +140,6 @@ const Home: NextPage = () => {
       setCanSelectTypeOfEconomicEntity(false);
     }
   }, [name, federalState]);
-  console.log(property);
   return (
     <div>
       <Head>
@@ -182,6 +186,7 @@ const Home: NextPage = () => {
                 errorState={referenceErrorState}
                 isCorrectState={referenceIsCorrectState}
                 title="Aktenzeichen / EW-AZ"
+                maxLength={30}
                 placeholder="19912312340010001"
                 allowedCharsRegExp={/[^0-9]/g}
                 valueState={referenceState}
@@ -193,6 +198,7 @@ const Home: NextPage = () => {
                 errorState={streetErrorState}
                 isCorrectState={streetIsCorrectState}
                 title="Straße"
+                maxLength={25}
                 valueState={streetState}
                 allowedCharsRegExp={/[^A-Za-zäöü-]/g}
               />
@@ -201,6 +207,7 @@ const Home: NextPage = () => {
                 errorState={houseNumberErrorState}
                 isCorrectState={houseNumberIsCorrectState}
                 title="Hausnummer"
+                maxLength={14}
                 valueState={houseNumberState}
                 allowedCharsRegExp={/[^0-9/-A-Za-z]/g}
               />
@@ -218,6 +225,7 @@ const Home: NextPage = () => {
               />
               <Input
                 title="Ort"
+                maxLength={25}
                 placeholder="Lüdenscheid"
                 isCorrectState={cityIsCorrectState}
                 errorState={cityErrorState}
@@ -289,7 +297,55 @@ const Home: NextPage = () => {
               </div>
             ) : null}
           </>
-          {property.economicEntityType !== EconomicEntities.none ? <Button name="Vorerfassungsbogen herunterladen" /> : null}
+          {property.economicEntityType !== EconomicEntities.none ? (
+            <div className="space-y-1 flex flex-col">
+              <input
+                type="file"
+                name="file"
+                onChange={(event) => {
+                  if (event.target.files) {
+                    setSelectedFile(event.target.files[0] ?? "");
+                    setIsFilePicked(true);
+                  }
+                }}
+              />
+              <Button
+                onClick={async () => {
+                  if (selectedFile) {
+                    const data = await selectedFile.arrayBuffer();
+                    const preRegistrationWorkbook = read(data);
+
+                    const economicEntitySheet = preRegistrationWorkbook.Sheets["Wirtschaftliche Einheit"];
+
+                    utils.sheet_add_aoa(economicEntitySheet, [[property.reference]], { origin: "B7" });
+                    utils.sheet_add_aoa(
+                      economicEntitySheet,
+                      [
+                        [
+                          property.economicEntityType === EconomicEntities.LandAndForestry
+                            ? "3 [Betrieb der Land- und Forstwirtschaft]"
+                            : property.economicEntityType === EconomicEntities.built
+                            ? "2 [bebautes Grundstück]"
+                            : "1 [unbebautes Grundstück]",
+                        ],
+                      ],
+                      { origin: "D7" }
+                    );
+                    utils.sheet_add_aoa(economicEntitySheet, [[federalStates[property.federalStateUid]]], { origin: "E7" });
+                    utils.sheet_add_aoa(economicEntitySheet, [[property.city]], { origin: "F7" });
+                    utils.sheet_add_aoa(economicEntitySheet, [[property.zip]], { origin: "G7" });
+                    utils.sheet_add_aoa(economicEntitySheet, [[property.street]], { origin: "H7" });
+                    utils.sheet_add_aoa(economicEntitySheet, [[property.houseNumber]], { origin: "I7" });
+
+                    const filledPreRegistrationWorkbook = utils.book_new();
+                    utils.book_append_sheet(filledPreRegistrationWorkbook, economicEntitySheet, "Wirtschaftliche Einheit");
+                    const exportData = writeFile(filledPreRegistrationWorkbook, "out.xlsx");
+                  }
+                }}
+                name="Vorerfassungsbogen herunterladen"
+              />
+            </div>
+          ) : null}
         </div>
       </div>
     </div>

@@ -445,8 +445,8 @@ export type propertyType = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 export type developmentState = 1 | 2;
 
 export enum EconomicEntities {
-  built = 1,
-  undeveloped = 2,
+  undeveloped = 1,
+  built = 2,
   LandAndForestry = 3,
   none = -1,
 }
