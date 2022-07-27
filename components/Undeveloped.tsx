@@ -12,10 +12,9 @@ const Undeveloped = () => {
   const areaOfTheLandValueErrorState = useState<string>("");
   const areaOfTheLandValueIsCorrectState = useState<boolean>(false);
 
-  //make useffect to add areaoflandvalue to property
   useEffect(() => {
     setProperty({ ...property, areaOfTheLand: [{ areaOfTheLandValue: parseInt(areaOfTheLandValue), areaOfTheLand: 0 }] });
-  }, [areaOfTheLandValue]);
+  }, [areaOfTheLandValue, setProperty]);
 
   return (
     <div className="flex-row flex space-x-1">
