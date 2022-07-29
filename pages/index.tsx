@@ -1,16 +1,15 @@
-import type { NextPage } from "next";
-import Head from "next/head";
-import Image from "next/image";
+import { read, writeFile, utils } from "xlsx";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
-import Undeveloped from "../components/Undeveloped";
+import type { NextPage } from "next";
 import Button from "../components/Button";
-import Built from "../components/Built";
 import Input from "../components/Input";
+import Image from "next/image";
+import Head from "next/head";
 import { federalStates, ZipApiResponse } from "../types/global";
 import { EconomicEntities, Property } from "../types/property";
 import { propertyState } from "../Atoms";
-import { read, writeFile, utils } from "xlsx";
+import { getZipInfo } from "../Utils";
 
 const Home: NextPage = () => {
   const [property, setProperty] = useRecoilState<Property>(propertyState);
@@ -102,34 +101,23 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     if (plz.length == 5) {
-      const xhr = new XMLHttpRequest();
       setPlzLoading(true);
-      xhr.open("GET", `https://api.zippopotam.us/de/${plz}`);
-      xhr.onreadystatechange = () => {
-        if (xhr.readyState === 4) {
-          setPlzLoading(false);
-          const rawResponseObject = JSON.parse(xhr.responseText);
-          if (rawResponseObject.country) {
-            const response: ZipApiResponse = {
-              city: rawResponseObject.places[0]["place name"],
-              state: rawResponseObject.places[0].state,
-              zip: rawResponseObject["post code"],
-            };
-            if (federalStateText.length === 0) {
-              setFederalStateText(response.state);
-              setFederalIsCorrect(true);
-            }
-            if (city.length === 0) {
-              setCity(response.city);
-              setCityIsCorrect(true);
-            }
-            setPlzIsCorrect(true);
-          } else {
-            setPlzError(`Die PLZ ${plz} existiert nicht.`);
+      getZipInfo(plz, (zipInfo: any) => {
+        setPlzLoading(false);
+        if (zipInfo) {
+          if (federalStateText.length === 0) {
+            setFederalStateText(zipInfo.state);
+            setFederalIsCorrect(true);
           }
+          if (city.length === 0) {
+            setCity(zipInfo.city);
+            setCityIsCorrect(true); //TODO: this doesnt work somehow
+          }
+          setPlzIsCorrect(true);
+        } else {
+          setPlzError(`Die PLZ ${plz} existiert nicht.`);
         }
-      };
-      xhr.send();
+      });
     }
   }, [plz, setPlzLoading, setPlzError, setPlzIsCorrect, setCityIsCorrect, setCommunityIsCorrect, setFederalIsCorrect, setCommunity, setFederalStateText, setCity]);
 
@@ -140,6 +128,7 @@ const Home: NextPage = () => {
       setCanSelectTypeOfEconomicEntity(false);
     }
   }, [name, federalState]);
+
   return (
     <div>
       <Head>
@@ -200,7 +189,7 @@ const Home: NextPage = () => {
                 title="Straße"
                 maxLength={25}
                 valueState={streetState}
-                allowedCharsRegExp={/[^A-Za-zäöü-]/g}
+                allowedCharsRegExp={/[^A-Za-zäöü -]/g}
               />
               <Input
                 placeholder="2"
@@ -254,96 +243,85 @@ const Home: NextPage = () => {
             </div>
           </div>
           {canSelectTypeOfEconomicEntity ? (
-            <div className="flex space-x-1">
-              <Button
-                name={"Unbebaut"}
-                disabled={typeOfEconomicEntity === EconomicEntities.undeveloped}
-                onClick={() => {
-                  setTypeOfEconomicEntity(EconomicEntities.undeveloped);
-                  setProperty({ ...property, economicEntityType: EconomicEntities.undeveloped });
-                  //TODO: reset every value for the other two types
-                }}
-              />
-              <Button
-                name={"Land und Forstwirtschaft"}
-                disabled /* ={typeOfEconomicEntity === EconomicEntities.LandAndForestry} */
-                onClick={() => {
-                  setTypeOfEconomicEntity(EconomicEntities.LandAndForestry);
-                  setProperty({ ...property, economicEntityType: EconomicEntities.LandAndForestry });
-                  //TODO: reset every value for the other two types
-                }}
-              />
-              <Button
-                name={"Bebaut"}
-                disabled /* ={typeOfEconomicEntity === EconomicEntities.built} */
-                onClick={() => {
-                  setTypeOfEconomicEntity(EconomicEntities.built);
-                  setProperty({ ...property, economicEntityType: EconomicEntities.built });
-                  //TODO: reset every value for the other two types
-                }}
-              />
-            </div>
-          ) : null}
-          <>
-            {typeOfEconomicEntity === EconomicEntities.undeveloped ? (
-              <Undeveloped />
-            ) : typeOfEconomicEntity === EconomicEntities.built ? (
-              <div>
-                <Built />
+            <div className="flex flex-col space-y-5">
+              {/* TypeofEconomicEntity Buttons */}
+              <div className="flex space-x-1">
+                <Button
+                  name={"Unbebaut"}
+                  disabled={typeOfEconomicEntity === EconomicEntities.undeveloped}
+                  onClick={() => {
+                    setTypeOfEconomicEntity(EconomicEntities.undeveloped);
+                    setProperty({ ...property, economicEntityType: EconomicEntities.undeveloped });
+                    //TODO: reset every value for the other two types
+                  }}
+                />
+                <Button
+                  name={"Land und Forstwirtschaft"}
+                  disabled={typeOfEconomicEntity === EconomicEntities.LandAndForestry}
+                  onClick={() => {
+                    setTypeOfEconomicEntity(EconomicEntities.LandAndForestry);
+                    setProperty({ ...property, economicEntityType: EconomicEntities.LandAndForestry });
+                    //TODO: reset every value for the other two types
+                  }}
+                />
+                <Button
+                  name={"Bebaut"}
+                  disabled={typeOfEconomicEntity === EconomicEntities.built}
+                  onClick={() => {
+                    setTypeOfEconomicEntity(EconomicEntities.built);
+                    setProperty({ ...property, economicEntityType: EconomicEntities.built });
+                    //TODO: reset every value for the other two types
+                  }}
+                />
               </div>
-            ) : typeOfEconomicEntity === EconomicEntities.LandAndForestry ? (
-              <div>
-                <h1>{"l und f"}</h1>
-              </div>
-            ) : null}
-          </>
-          {property.economicEntityType !== EconomicEntities.none ? (
-            <div className="space-y-1 flex flex-col">
-              <input
-                type="file"
-                name="file"
-                onChange={(event) => {
-                  if (event.target.files) {
-                    setSelectedFile(event.target.files[0] ?? "");
-                    setIsFilePicked(true);
-                  }
-                }}
-              />
-              <Button
-                onClick={async () => {
-                  if (selectedFile) {
-                    const data = await selectedFile.arrayBuffer();
-                    const preRegistrationWorkbook = read(data);
+              {property.economicEntityType !== EconomicEntities.none ? (
+                <div className="flex justify-center">
+                  {/*add loading to button like with plz input */}
+                  <Button
+                    onClick={async () => {
+                      const bundesmodellURL = "https://hilfe.grundsteuer-digital.de/wp-content/uploads/2022/05/Vorerfassungsbogen-Bundesmodell-2.5-1.xlsx";
+                      var req = new XMLHttpRequest();
+                      req.open("GET", bundesmodellURL, true);
+                      req.responseType = "arraybuffer";
 
-                    const economicEntitySheet = preRegistrationWorkbook.Sheets["Wirtschaftliche Einheit"];
+                      req.onload = function (e) {
+                        /* parse the data when it is received */
+                        var data = new Uint8Array(req.response);
+                        var preRegistrationWorkbook = read(data, { type: "array" });
+                        /* DO SOMETHING WITH workbook HERE */
 
-                    utils.sheet_add_aoa(economicEntitySheet, [[property.reference]], { origin: "B7" });
-                    utils.sheet_add_aoa(
-                      economicEntitySheet,
-                      [
-                        [
-                          property.economicEntityType === EconomicEntities.LandAndForestry
-                            ? "3 [Betrieb der Land- und Forstwirtschaft]"
-                            : property.economicEntityType === EconomicEntities.built
-                            ? "2 [bebautes Grundstück]"
-                            : "1 [unbebautes Grundstück]",
-                        ],
-                      ],
-                      { origin: "D7" }
-                    );
-                    utils.sheet_add_aoa(economicEntitySheet, [[federalStates[property.federalStateUid]]], { origin: "E7" });
-                    utils.sheet_add_aoa(economicEntitySheet, [[property.city]], { origin: "F7" });
-                    utils.sheet_add_aoa(economicEntitySheet, [[property.zip]], { origin: "G7" });
-                    utils.sheet_add_aoa(economicEntitySheet, [[property.street]], { origin: "H7" });
-                    utils.sheet_add_aoa(economicEntitySheet, [[property.houseNumber]], { origin: "I7" });
+                        const economicEntitySheet = preRegistrationWorkbook.Sheets["Wirtschaftliche Einheit"];
 
-                    const filledPreRegistrationWorkbook = utils.book_new();
-                    utils.book_append_sheet(filledPreRegistrationWorkbook, economicEntitySheet, "Wirtschaftliche Einheit");
-                    const exportData = writeFile(filledPreRegistrationWorkbook, "out.xlsx");
-                  }
-                }}
-                name="Vorerfassungsbogen herunterladen"
-              />
+                        utils.sheet_add_aoa(economicEntitySheet, [[property.reference]], { origin: "B7" });
+                        utils.sheet_add_aoa(
+                          economicEntitySheet,
+                          [
+                            [
+                              property.economicEntityType === EconomicEntities.LandAndForestry
+                                ? "3 [Betrieb der Land- und Forstwirtschaft]"
+                                : property.economicEntityType === EconomicEntities.built
+                                ? "2 [bebautes Grundstück]"
+                                : "1 [unbebautes Grundstück]",
+                            ],
+                          ],
+                          { origin: "D7" }
+                        );
+                        utils.sheet_add_aoa(economicEntitySheet, [[federalStates[property.federalStateUid]]], { origin: "E7" });
+                        utils.sheet_add_aoa(economicEntitySheet, [[property.city]], { origin: "F7" });
+                        utils.sheet_add_aoa(economicEntitySheet, [[property.zip]], { origin: "G7" });
+                        utils.sheet_add_aoa(economicEntitySheet, [[property.street]], { origin: "H7" });
+                        utils.sheet_add_aoa(economicEntitySheet, [[property.houseNumber]], { origin: "I7" });
+
+                        const filledPreRegistrationWorkbook = utils.book_new();
+                        utils.book_append_sheet(filledPreRegistrationWorkbook, economicEntitySheet, "Wirtschaftliche Einheit");
+                        const exportData = writeFile(filledPreRegistrationWorkbook, "out.xlsx");
+                      };
+                      req.send();
+                    }}
+                    name="Vorerfassungsbogen herunterladen"
+                  />
+                </div>
+              ) : null}
             </div>
           ) : null}
         </div>
