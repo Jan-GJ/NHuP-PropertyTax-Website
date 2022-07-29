@@ -41,3 +41,12 @@ export interface LogoBannerProps {
   width: number;
   src: string;
 }
+
+export const preRegistrationWorkbooks = [
+  { name: "Bundesmodell", url: "https://hilfe.grundsteuer-digital.de/wp-content/uploads/2022/05/Vorerfassungsbogen-Bundesmodell-2.5-1.xlsx" },
+  { name: "Bayern", url: "https://hilfe.grundsteuer-digital.de/wp-content/uploads/2022/05/Vorerfassungsbogen-Bayern-2.5.xlsx" },
+  { name: "Baden Württemberg", url: "https://hilfe.grundsteuer-digital.de/wp-content/uploads/2022/06/Vorerfassungsbogen-Baden-Wuerttemberg-2.5.xlsx" },
+  { name: "Hamburg", url: "https://hilfe.grundsteuer-digital.de/wp-content/uploads/2022/05/Vorerfassungsbogen-Hamburg-2.5.xlsx" },
+  { name: "Hessen", url: "https://hilfe.grundsteuer-digital.de/wp-content/uploads/2022/05/Vorerfassungsbogen-Hessen-2.5.xlsx" },
+  { name: "Niedersachsen", url: "https://hilfe.grundsteuer-digital.de/wp-content/uploads/2022/05/Vorerfassungsbogen-Niedersachsen-2.5.xlsx" },
+];

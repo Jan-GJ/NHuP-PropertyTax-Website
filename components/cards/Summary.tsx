@@ -6,7 +6,7 @@ import { Property, federalStates, economicEntities } from "../../types/property"
 
 const Summary = () => {
   const [property, setProperty] = useRecoilState<Property>(propertyState);
-
+  console.log(property);
   return (
     <Card title="Zusammenfassung">
       <div className="flex flex-col p-3">

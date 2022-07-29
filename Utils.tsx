@@ -1,4 +1,6 @@
-import { ZipApiResponse } from "./types/global";
+import { read, utils, WorkBook } from "xlsx";
+import { preRegistrationWorkbooks, ZipApiResponse } from "./types/global";
+import { EconomicEntities, federalStates, Property } from "./types/property";
 
 export const getZipInfo = (zip: string, callback: Function) => {
   const getRequest = new XMLHttpRequest();
@@ -19,4 +21,52 @@ export const getZipInfo = (zip: string, callback: Function) => {
     }
   };
   getRequest.send();
+};
+
+export const getPreRegistrationWorkbook = (federalStateUid: number, callback: Function) => {
+  const preRegistrationWorkbook = preRegistrationWorkbooks.find((preRegistrationWorkbook) => preRegistrationWorkbook.name === federalStates[federalStateUid])
+    ? preRegistrationWorkbooks.find((preRegistrationWorkbook) => preRegistrationWorkbook.name === federalStates[federalStateUid])
+    : preRegistrationWorkbooks[0];
+  if (preRegistrationWorkbook) {
+    var getRequest = new XMLHttpRequest();
+    getRequest.open("GET", preRegistrationWorkbook.url, true);
+    getRequest.responseType = "arraybuffer";
+    getRequest.onload = function (e) {
+      const data = new Uint8Array(getRequest.response);
+      const preRegistrationWorkbook = read(data, { type: "array" });
+      callback(preRegistrationWorkbook);
+    };
+    getRequest.send();
+  } else {
+    callback(false);
+  }
+};
+
+export const getfilledPreRegistrationWorkbook = (workbook: WorkBook, property: Property) => {
+  const economicEntitySheet = workbook.Sheets["Wirtschaftliche Einheit"];
+
+  utils.sheet_add_aoa(economicEntitySheet, [[property.reference]], { origin: "B7" });
+  utils.sheet_add_aoa(
+    economicEntitySheet,
+    [
+      [
+        property.economicEntityType === EconomicEntities.LandAndForestry
+          ? "3 [Betrieb der Land- und Forstwirtschaft]"
+          : property.economicEntityType === EconomicEntities.built
+          ? "2 [bebautes Grundstück]"
+          : "1 [unbebautes Grundstück]",
+      ],
+    ],
+    { origin: "D7" }
+  );
+  utils.sheet_add_aoa(economicEntitySheet, [[federalStates[property.federalStateUid]]], { origin: "E7" });
+  utils.sheet_add_aoa(economicEntitySheet, [[property.city]], { origin: "F7" });
+  utils.sheet_add_aoa(economicEntitySheet, [[property.zip]], { origin: "G7" });
+  utils.sheet_add_aoa(economicEntitySheet, [[property.street]], { origin: "H7" });
+  utils.sheet_add_aoa(economicEntitySheet, [[property.houseNumber]], { origin: "I7" });
+
+  const filledWorkbook = utils.book_new();
+
+  utils.book_append_sheet(filledWorkbook, economicEntitySheet, "Wirtschaftliche Einheit");
+  return filledWorkbook;
 };
