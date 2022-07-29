@@ -1,4 +1,4 @@
-import { federalStates, ZipApiResponse } from "./types/global";
+import { ZipApiResponse } from "./types/global";
 
 export const getZipInfo = (zip: string, callback: Function) => {
   const getRequest = new XMLHttpRequest();

@@ -4,7 +4,7 @@ export interface ZipApiResponse {
   zip: string;
 }
 
-export interface Input {
+export interface InputProps {
   title?: string | JSX.Element;
   placeholder?: string;
   required?: boolean;
@@ -23,21 +23,21 @@ export interface Input {
   width?: string;
 }
 
-export const federalStates = [
-  "Bayern",
-  "Berlin",
-  "Baden-Würtemberg",
-  "Brandenburg",
-  "Bremen",
-  "Hamburg",
-  "Hessen",
-  "Mecklenburg-Vorpommern",
-  "Rheinland-Pfalz",
-  "Nordrhein-Westfalen",
-  "Saarland",
-  "Sachsen",
-  "Sachsen-Anhalt",
-  "Schleswig-Holstein",
-  "Niedersachsen",
-  "Thüringen",
-];
+export interface ButtonProps {
+  name: string;
+  onClick?: any;
+  disabled?: boolean;
+  loading?: boolean;
+}
+
+export interface CardProps {
+  children: any;
+  title: string;
+}
+
+export interface LogoBannerProps {
+  url?: string;
+  height: number;
+  width: number;
+  src: string;
+}

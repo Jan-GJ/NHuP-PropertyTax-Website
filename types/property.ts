@@ -451,6 +451,27 @@ export enum EconomicEntities {
   none = -1,
 }
 
+export const economicEntities = ["Unbebaut", "Bebaut", "Land und Forstwirtschaft"];
+
+export const federalStates = [
+  "Bayern",
+  "Berlin",
+  "Baden-Würtemberg",
+  "Brandenburg",
+  "Bremen",
+  "Hamburg",
+  "Hessen",
+  "Mecklenburg-Vorpommern",
+  "Rheinland-Pfalz",
+  "Nordrhein-Westfalen",
+  "Saarland",
+  "Sachsen",
+  "Sachsen-Anhalt",
+  "Schleswig-Holstein",
+  "Niedersachsen",
+  "Thüringen",
+];
+
 export interface Property {
   name: string;
   street?: string;

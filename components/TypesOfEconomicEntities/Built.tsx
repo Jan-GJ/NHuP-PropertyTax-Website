@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { useRecoilState } from "recoil";
-import { propertyState } from "../Atoms";
-import { Parcel, ParcelData, Property } from "../types/property";
-import Button from "./Button";
-import Input from "./Input";
+import { propertyState } from "../../Atoms";
+import { Parcel, ParcelData, Property } from "../../types/property";
+import Button from "../ui/Button";
+import Input from "../ui/Input";
 
 const Built = () => {
   const [property, setProperty] = useRecoilState<Property>(propertyState);

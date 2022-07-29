@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Input } from "../types/global";
+import { InputProps } from "../../types/global";
 
 const Input = ({
   title,
@@ -18,7 +18,7 @@ const Input = ({
   valueState,
   errorState,
   isCorrectState,
-}: Input) => {
+}: InputProps) => {
   const [isCorrect, setIsCorrect] = isCorrectState;
   const [value, setValue] = valueState;
   const [error, setError] = errorState;
@@ -30,7 +30,7 @@ const Input = ({
     if (allowedCharsRegExp) setValue(value.replace(allowedCharsRegExp, "").replace(/(\..*)\./g, "$1"));
     let newError = "";
     let newIsCorrect = false;
-    if (allowedEndResults) if (allowedEndResults.includes(value)) newIsCorrect = true;
+    if (allowedEndResults) if (allowedEndResults.includes(value)) newIsCorrect = true; //TODO: for street name use google api to check this make special case for it so query street name with debounce
 
     if (allowedEndResults) if (!allowedEndResults.includes(value)) newError = `${value} ist kein(e) ${title}`;
 
@@ -57,7 +57,7 @@ const Input = ({
   }, [value]);
 
   return (
-    <div className="space-y-[0.5]">
+    <div className="">
       <div className="flex justify-between items-end">
         {title ? (
           <div className="flex flex-row">
@@ -88,13 +88,13 @@ const Input = ({
               : "border-red-500"
             : isCorrect
             ? disabled
-              ? "border-[#229D56]/50"
-              : "border-[#229D56]"
+              ? "border-accent/50"
+              : "border-accent"
             : disabled
             ? "border-gray-500/50"
             : "border-gray-500"
         }
-          border-[3px] focus:border-[#229D56]`}
+          border-[3px] focus:border-accent`}
         value={value}
         onChange={({ target }) => {
           setValue(target.value);
@@ -107,7 +107,7 @@ const Input = ({
         disabled={disabled}
         maxLength={maxLength}
       />
-      {loading ? <div className=" h-1 animate-pulse bg-[#229D56] " /> : null}
+      {loading ? <div className="loadingIndicator" /> : null}
       {showSuggestions ? (
         <div className="py-1">
           {filteredSuggestions?.map((suggestion, index) => (
