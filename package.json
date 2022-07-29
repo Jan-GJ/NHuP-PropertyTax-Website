@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start -p 4500",
+    "startServer": "screen -dmS nh-grundsteuer next start -p 4500",
     "lint": "next lint"
   },
   "dependencies": {
