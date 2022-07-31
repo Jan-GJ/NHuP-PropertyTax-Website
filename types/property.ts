@@ -60,6 +60,8 @@ export interface ShareOfOwnership {
   denominator: number;
 }
 
+export type containedInAreaType = 1 | 2 | 3;
+
 export interface Parcel {
   community?: string;
   parcel?: string;
@@ -68,7 +70,7 @@ export interface Parcel {
   parcelData: ParcelData;
   areaOfTheLand?: number;
   shareOfOwnership?: ShareOfOwnership;
-  containedInArea?: number;
+  containedInArea?: containedInAreaType;
 }
 
 export interface Ownership {

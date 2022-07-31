@@ -1,22 +1,22 @@
-import { writeFile, utils, WorkBook } from "xlsx";
-import { useRecoilState } from "recoil";
+import { useRecoilValue } from "recoil";
 import type { NextPage } from "next";
+import { writeFile } from "xlsx";
 import { useState } from "react";
 import Head from "next/head";
 
-import { EconomicEntities, Property, federalStates } from "../types/property";
+import { EconomicEntities, Property } from "../types/property";
 
 import { propertyState } from "../Atoms";
 
+import { getfilledPreRegistrationWorkbook, getPreRegistrationWorkbook } from "../Utils";
 import TypeOfEconomicPropertyMask from "../components/cards/TypeOfEconomicEntityMask";
+import ParcelsMask from "../components/cards/ParcelsMask";
 import Summary from "../components/cards/Summary";
 import Button from "../components/ui/Button";
 import Header from "../components/ui/Header";
-import { getfilledPreRegistrationWorkbook, getPreRegistrationWorkbook } from "../Utils";
 
 const Home: NextPage = () => {
-  const [property, setProperty] = useRecoilState<Property>(propertyState);
-
+  const property = useRecoilValue<Property>(propertyState);
   const [preRegistrationFormLoading, setPreRegistrationFormLoading] = useState<boolean>(false);
   return (
     <div>
@@ -27,31 +27,30 @@ const Home: NextPage = () => {
       </Head>
       <div>
         <Header />
-        {/* Create Entity/Property */}
-        <div className="px-2">
+        <div className="px-2 flex-col">
           <div className="flex space-x-2">
             <TypeOfEconomicPropertyMask />
+            {property.economicEntityType !== EconomicEntities.none ? <ParcelsMask /> : null}
             <Summary />
           </div>
+          {/* Download filled preRegistrationForm button */}
           {property.economicEntityType !== EconomicEntities.none ? (
-            <div className="flex justify-end">
-              <Button
-                onClick={() => {
-                  setPreRegistrationFormLoading(true);
-                  getPreRegistrationWorkbook(property.federalStateUid, (preRegistrationWorkbook: any) => {
-                    if (preRegistrationWorkbook) {
-                      const filledPreRegistrationWorkbook = getfilledPreRegistrationWorkbook(preRegistrationWorkbook, property);
-                      writeFile(filledPreRegistrationWorkbook, `Ausgefüllter Vorerfassungsbogen für die Wirtschaftliche Einheit ${property.name}.xlsx`);
-                      setPreRegistrationFormLoading(false);
-                    } else {
-                      setPreRegistrationFormLoading(false);
-                    }
-                  });
-                }}
-                name="Vorerfassungsbogen herunterladen"
-                loading={preRegistrationFormLoading}
-              />
-            </div>
+            <Button
+              onClick={() => {
+                setPreRegistrationFormLoading(true);
+                getPreRegistrationWorkbook(property.federalStateUid, (preRegistrationWorkbook: any) => {
+                  if (preRegistrationWorkbook) {
+                    const filledPreRegistrationWorkbook = getfilledPreRegistrationWorkbook(preRegistrationWorkbook, property);
+                    writeFile(filledPreRegistrationWorkbook, `Ausgefüllter Vorerfassungsbogen für die Wirtschaftliche Einheit ${property.name}.xlsx`);
+                    setPreRegistrationFormLoading(false);
+                  } else {
+                    setPreRegistrationFormLoading(false);
+                  }
+                });
+              }}
+              name="Vorerfassungsbogen herunterladen"
+              loading={preRegistrationFormLoading}
+            />
           ) : null}
         </div>
       </div>

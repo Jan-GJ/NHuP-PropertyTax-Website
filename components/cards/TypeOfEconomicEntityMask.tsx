@@ -223,7 +223,7 @@ const TypeOfEconomicPropertyMask = () => {
               onClick={() => {
                 setTypeOfEconomicEntity(EconomicEntities.undeveloped);
                 setProperty({ ...property, economicEntityType: EconomicEntities.undeveloped });
-                // reset every value for the other two types
+                //TODO: reset every value for the other two types
               }}
             />
 
