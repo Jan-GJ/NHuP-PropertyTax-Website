@@ -19,6 +19,10 @@ const Summary = () => {
         <h1>{`Ort: ${property.city}`}</h1>
         <h1>{`Bezeichnung: ${property.name}`}</h1>
         <h1>{`Art der Wirtschaftlichen Einheit: ${economicEntities[property.economicEntityType - 1] ? economicEntities[property.economicEntityType - 1] : ""}`}</h1>
+        <h1>{"Flurstücke:"}</h1>
+        {property.parcels?.map((parcel, index) => (
+          <h1 key={index}>{`Flur: ${parcel.corridor} Flurstück Zähler: ${parcel.parcelData.counter} Flurstück Nenner: ${parcel.parcelData.denominator}`}</h1>
+        ))}
       </div>
     </Card>
   );
