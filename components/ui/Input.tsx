@@ -101,7 +101,7 @@ const Input = ({
           checkValue(target.value);
           updateSuggestions(target.value);
         }}
-        title={error}
+        title={error ? error : ""}
         type={type}
         pattern={pattern}
         disabled={disabled}

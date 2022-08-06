@@ -33,6 +33,7 @@ export interface ButtonProps {
 export interface CardProps {
   children: any;
   title: string;
+  headerRight?: any;
 }
 
 export interface LogoBannerProps {
