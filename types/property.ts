@@ -474,6 +474,8 @@ export const federalStates = [
   "Thüringen",
 ];
 
+export const ownershipStructures = ["Alleineigentum einer natürlichen Person"];
+
 export interface Property {
   name: string;
   street?: string;

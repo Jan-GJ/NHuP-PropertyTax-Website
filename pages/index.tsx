@@ -15,6 +15,7 @@ import Summary from "../components/cards/Summary";
 import Button from "../components/ui/Button";
 import Header from "../components/ui/Header";
 import PropertyDetailsMask from "../components/cards/PropertyDetailsMask";
+import AreaOfTheLandMask from "../components/cards/AreaOfTheLandMask";
 
 //TODO: add maxLength from api website to each input
 
@@ -33,7 +34,8 @@ const Home: NextPage = () => {
         <div className="px-2 flex-col">
           <div className="flex space-x-2">
             <TypeOfEconomicPropertyMask />
-            {/*     < TODO: PropertyDetailsMask /> */}
+            {property.economicEntityType !== EconomicEntities.none ? <PropertyDetailsMask /> : null}
+            {property.economicEntityType !== EconomicEntities.none ? <AreaOfTheLandMask /> : null}
             {property.economicEntityType !== EconomicEntities.none ? <ParcelsMask /> : null}
             <Summary />
           </div>
