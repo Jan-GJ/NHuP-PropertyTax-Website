@@ -18,6 +18,7 @@ const Input = ({
   valueState,
   errorState,
   isCorrectState,
+  nonEditable = false,
 }: InputProps) => {
   const [isCorrect, setIsCorrect] = isCorrectState;
   const [value, setValue] = valueState;
@@ -97,9 +98,11 @@ const Input = ({
           border-[3px] focus:border-accent`}
         value={value}
         onChange={({ target }) => {
-          setValue(target.value);
-          checkValue(target.value);
-          updateSuggestions(target.value);
+          if (!nonEditable) {
+            setValue(target.value);
+            checkValue(target.value);
+            updateSuggestions(target.value);
+          }
         }}
         title={error ? error : ""}
         type={type}

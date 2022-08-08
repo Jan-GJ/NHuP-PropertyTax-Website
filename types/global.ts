@@ -21,6 +21,7 @@ export interface InputProps {
   valueState: any;
   errorState: any;
   width?: string;
+  nonEditable?: boolean;
 }
 
 export interface ButtonProps {

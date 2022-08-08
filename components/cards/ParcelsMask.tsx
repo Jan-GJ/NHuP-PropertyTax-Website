@@ -229,13 +229,13 @@ export const ParcelsMask = () => {
                 setContainedInArea(2);
               }}
             />
-            <Button
+            {/*    <Button
               name={`Fläche 3 ${property.areaOfTheLand ? `(${property.areaOfTheLand[2].areaOfTheLandValue}€ pro qm)` : ""}`}
               disabled={containedInArea === 3}
               onClick={() => {
                 setContainedInArea(3);
               }}
-            />
+            /> */}
           </div>
         </div>
         <Button

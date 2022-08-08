@@ -38,6 +38,7 @@ function AreaOfTheLandMask() {
   const areaOfTheLandValueThreeErrorState = useState<string>("");
   const areaOfTheLandValueThreeIsCorrectState = useState<string>("");
 
+  //TODO: this doesnt work somehow
   useEffect(() => {
     let newAreaOfTheLand = [
       { areaOfTheLand: 0, areaOfTheLandValue: 0 },
@@ -86,7 +87,7 @@ function AreaOfTheLandMask() {
           <p className="font-medium">{"Fläche 1"}</p>
           <div className="flex flex-row space-x-1">
             <Input
-              disabled
+              nonEditable
               valueState={areaOfTheLandOneState}
               errorState={areaOfTheLandOneErrorState}
               isCorrectState={areaOfTheLandOneIsCorrectState}
@@ -111,7 +112,7 @@ function AreaOfTheLandMask() {
           <p className="font-medium">{"Fläche 2"}</p>
           <div className="flex flex-row space-x-1">
             <Input
-              disabled
+              nonEditable
               valueState={areaOfTheLandTwoState}
               errorState={areaOfTheLandTwoErrorState}
               isCorrectState={areaOfTheLandTwoIsCorrectState}
@@ -132,7 +133,7 @@ function AreaOfTheLandMask() {
             />
           </div>
         </div>
-        <div>
+        {/*   <div>
           <p className="font-medium">{"Fläche 3"}</p>
           <div className="flex flex-row space-x-1">
             <Input
@@ -156,7 +157,7 @@ function AreaOfTheLandMask() {
               placeholder={"20"}
             />
           </div>
-        </div>
+        </div> */}
       </div>
     </Card>
   );

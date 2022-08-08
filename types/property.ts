@@ -63,8 +63,8 @@ export interface ShareOfOwnership {
 export type containedInAreaType = 1 | 2 | 3;
 
 export interface Parcel {
-  community?: string;
-  parcel?: string;
+  community?: string /* TODO: get list for recomendation in ui from voreffasungsbogen */;
+  parcel?: string /* TODO: get list for recomendation in ui from voreffasungsbogen */;
   landRegisterSheet?: number;
   corridor?: number;
   parcelData: ParcelData;

@@ -1,20 +1,27 @@
-import React, { useState } from "react";
-import { useRecoilValue } from "recoil";
+import React, { useEffect, useState } from "react";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { propertyState } from "../../Atoms";
-import { ownershipStructures, Property, typeOfProperties } from "../../types/property";
+import { EconomicEntities, ownershipStructure, ownershipStructures, Property, typeOfProperties } from "../../types/property";
 import Card from "../layout/Card";
 import Input from "../ui/Input";
 
 const PropertyDetailsMask = () => {
-  const property = useRecoilValue<Property>(propertyState);
+  const [property, setProperty] = useRecoilState<Property>(propertyState);
 
-  const ownershipStructureTextState = useState<String>("");
-  const ownershipStructureTextErrorState = useState<String>("");
-  const ownershipStructureTextIsCorrectState = useState<String>("");
+  const ownershipStructureTextState = useState<string>("");
+  const [ownershipStructureText, setOwnershipStructureTextState] = ownershipStructureTextState;
 
-  const typeOfPropertyTextState = useState<String>("");
-  const typeOfPropertyTextErrorState = useState<String>("");
-  const typeOfPropertyTextIsCorrectState = useState<String>("");
+  const ownershipStructureTextErrorState = useState<string>("");
+  const ownershipStructureTextIsCorrectState = useState<string>("");
+
+  const typeOfPropertyTextState = useState<string>("");
+  const typeOfPropertyTextErrorState = useState<string>("");
+  const typeOfPropertyTextIsCorrectState = useState<string>("");
+
+  useEffect(() => {
+    const index = ownershipStructures.indexOf(ownershipStructureText) as ownershipStructure;
+    setProperty({ ...property, ownershipStructure: index });
+  }, [ownershipStructureText, setProperty]);
 
   return (
     <Card title="Informationen zum Grundstück">
@@ -25,23 +32,26 @@ const PropertyDetailsMask = () => {
           isCorrectState={ownershipStructureTextIsCorrectState}
           title="Eingentumsverhätnisse"
           placeholder="Alleineigentum einer natürlichen Person"
-          allowedEndResults={ownershipStructures}
+          /*  allowedEndResults={ownershipStructures} TODO: make show error only when wrong entry not only allowed*/
           suggestions={ownershipStructures}
           allowedCharsRegExp={/[^A-Za-zäöü -]/g}
           width={"min-w-[300px]"}
         />
-        <Input
-          valueState={typeOfPropertyTextState}
-          errorState={typeOfPropertyTextErrorState}
-          isCorrectState={typeOfPropertyTextIsCorrectState}
-          title="Art des Grundstücks"
-          placeholder=""
-          allowedEndResults={typeOfProperties}
-          suggestions={typeOfProperties}
-          allowedCharsRegExp={/[^A-Za-zäöü -]/g}
-          width={"min-w-[300px]"}
-        />
-        <h1>TODO: Erstreckts sich über mehrere Gemeinden</h1>
+        {property.economicEntityType !== EconomicEntities.undeveloped ? (
+          <Input
+            valueState={typeOfPropertyTextState}
+            errorState={typeOfPropertyTextErrorState}
+            isCorrectState={typeOfPropertyTextIsCorrectState}
+            title="Art des Grundstücks"
+            placeholder="Einfamilienhaus"
+            allowedEndResults={typeOfProperties}
+            suggestions={typeOfProperties}
+            allowedCharsRegExp={/[^A-Za-zäöü -]/g}
+            width={"min-w-[300px]"}
+          />
+        ) : null}
+
+        {/*   <h1>TODO: Erstreckts sich über mehrere Gemeinden</h1> */}
         {property.areaOfTheLand ? (
           property.areaOfTheLand[0].areaOfTheLand + property.areaOfTheLand[1].areaOfTheLand + property.areaOfTheLand[2].areaOfTheLand > 10000 ? (
             <div>
