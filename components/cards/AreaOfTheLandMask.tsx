@@ -1,45 +1,58 @@
 import React, { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { propertyState } from "../../Atoms";
-import { Property } from "../../types/property";
+import { AreaOfTheLand, Property } from "../../types/property";
 import Card from "../layout/Card";
 import Input from "../ui/Input";
 
 function AreaOfTheLandMask() {
   const [property, setProperty] = useRecoilState<Property>(propertyState);
 
-  const areaOfTheLandOneState = useState<String>("");
+  const areaOfTheLandOneState = useState<string>("");
   const [areaOfTheLandOne, setAreaOfTheLandOne] = areaOfTheLandOneState;
-  const areaOfTheLandOneErrorState = useState<String>("");
-  const areaOfTheLandOneIsCorrectState = useState<String>("");
+  const areaOfTheLandOneErrorState = useState<string>("");
+  const areaOfTheLandOneIsCorrectState = useState<string>("");
 
-  const areaOfTheLandValueOneState = useState<String>("");
-  const areaOfTheLandValueOneErrorState = useState<String>("");
-  const areaOfTheLandValueOneIsCorrectState = useState<String>("");
+  const areaOfTheLandValueOneState = useState<string>("");
+  const [areaOfTheLandValueOne, setAreaOfTheLandValueOne] = areaOfTheLandValueOneState;
+  const areaOfTheLandValueOneErrorState = useState<string>("");
+  const areaOfTheLandValueOneIsCorrectState = useState<string>("");
 
-  const areaOfTheLandTwoState = useState<String>("");
+  const areaOfTheLandTwoState = useState<string>("");
   const [areaOfTheLandTwo, setAreaOfTheLandTwo] = areaOfTheLandTwoState;
+  const areaOfTheLandTwoErrorState = useState<string>("");
+  const areaOfTheLandTwoIsCorrectState = useState<string>("");
 
-  const areaOfTheLandTwoErrorState = useState<String>("");
-  const areaOfTheLandTwoIsCorrectState = useState<String>("");
+  const areaOfTheLandValueTwoState = useState<string>("");
+  const [areaOfTheLandValueTwo, setAreaOfTheLandValueTwo] = areaOfTheLandValueTwoState;
+  const areaOfTheLandValueTwoErrorState = useState<string>("");
+  const areaOfTheLandValueTwoIsCorrectState = useState<string>("");
 
-  const areaOfTheLandValueTwoState = useState<String>("");
-  const areaOfTheLandValueTwoErrorState = useState<String>("");
-  const areaOfTheLandValueTwoIsCorrectState = useState<String>("");
-
-  const areaOfTheLandThreeState = useState<String>("");
+  const areaOfTheLandThreeState = useState<string>("");
   const [areaOfTheLandThree, setAreaOfTheLandThree] = areaOfTheLandThreeState;
+  const areaOfTheLandThreeErrorState = useState<string>("");
+  const areaOfTheLandThreeIsCorrectState = useState<string>("");
 
-  const areaOfTheLandThreeErrorState = useState<String>("");
-  const areaOfTheLandThreeIsCorrectState = useState<String>("");
-
-  const areaOfTheLandValueThreeState = useState<String>("");
-  const areaOfTheLandValueThreeErrorState = useState<String>("");
-  const areaOfTheLandValueThreeIsCorrectState = useState<String>("");
+  const areaOfTheLandValueThreeState = useState<string>("");
+  const [areaOfTheLandValueThree, setAreaOfTheLandValueThree] = areaOfTheLandValueThreeState;
+  const areaOfTheLandValueThreeErrorState = useState<string>("");
+  const areaOfTheLandValueThreeIsCorrectState = useState<string>("");
 
   useEffect(() => {
-    //set property areaofLandhere herer
-  }, [setProperty]);
+    let newAreaOfTheLand = [
+      { areaOfTheLand: 0, areaOfTheLandValue: 0 },
+      { areaOfTheLand: 0, areaOfTheLandValue: 0 },
+      { areaOfTheLand: 0, areaOfTheLandValue: 0 },
+    ] as AreaOfTheLand[];
+    if (property.areaOfTheLand) {
+      newAreaOfTheLand = [
+        { areaOfTheLand: property.areaOfTheLand[0].areaOfTheLand, areaOfTheLandValue: parseInt(areaOfTheLandValueOne) ? parseInt(areaOfTheLandValueOne) : 0 },
+        { areaOfTheLand: property.areaOfTheLand[1].areaOfTheLand, areaOfTheLandValue: parseInt(areaOfTheLandValueTwo) ? parseInt(areaOfTheLandValueTwo) : 0 },
+        { areaOfTheLand: property.areaOfTheLand[2].areaOfTheLand, areaOfTheLandValue: parseInt(areaOfTheLandValueThree) ? parseInt(areaOfTheLandValueThree) : 0 },
+      ] as AreaOfTheLand[];
+    }
+    setProperty({ ...property, areaOfTheLand: newAreaOfTheLand });
+  }, [setProperty, areaOfTheLandValueOne, areaOfTheLandValueTwo, areaOfTheLandValueThree]);
 
   useEffect(() => {
     if (property.parcels) {
@@ -64,7 +77,7 @@ function AreaOfTheLandMask() {
       });
       setAreaOfTheLandThree(areaThree.toString());
     }
-  }, [property]);
+  }, [property, setAreaOfTheLandThree, setAreaOfTheLandTwo, setAreaOfTheLandOne]);
 
   return (
     <Card title="Flächenangaben">
@@ -89,6 +102,8 @@ function AreaOfTheLandMask() {
               errorState={areaOfTheLandValueOneErrorState}
               isCorrectState={areaOfTheLandValueOneIsCorrectState}
               title={"Bodenrichtwert in €"}
+              allowedCharsRegExp={/[^0-9]/g}
+              placeholder={"280"}
             />
           </div>
         </div>
@@ -112,6 +127,8 @@ function AreaOfTheLandMask() {
               errorState={areaOfTheLandValueTwoErrorState}
               isCorrectState={areaOfTheLandValueTwoIsCorrectState}
               title={"Bodenrichtwert in €"}
+              allowedCharsRegExp={/[^0-9]/g}
+              placeholder={"15"}
             />
           </div>
         </div>
@@ -135,6 +152,8 @@ function AreaOfTheLandMask() {
               errorState={areaOfTheLandValueThreeErrorState}
               isCorrectState={areaOfTheLandValueThreeIsCorrectState}
               title={"Bodenrichtwert in €"}
+              allowedCharsRegExp={/[^0-9]/g}
+              placeholder={"20"}
             />
           </div>
         </div>

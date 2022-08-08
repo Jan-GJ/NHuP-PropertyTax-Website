@@ -22,7 +22,6 @@ import ParcelElement from "../components/ui/ParcelElement";
 
 const Home: NextPage = () => {
   const property = useRecoilValue<Property>(propertyState);
-
   const [preRegistrationFormLoading, setPreRegistrationFormLoading] = useState<boolean>(false);
   return (
     <div>

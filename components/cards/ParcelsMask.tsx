@@ -6,21 +6,38 @@ import Card from "../layout/Card";
 import Button from "../ui/Button";
 import Input from "../ui/Input";
 
-const parcelModeSwitchHeader = (enabledState: any) => {
+const parcelModeSwitchHeader = (enabledState: any, keepValuesState: any) => {
   const [enabled, setEnabled] = enabledState;
+  const [keepValues, setKeepValues] = keepValuesState;
   return (
-    <div className="relative flex flex-col items-center justify-center">
-      <div className="flex items-center space-x-1">
-        <span className="text-sm font-medium">{enabled ? "Komplex" : "Einfach"}</span>
-        <label className="inline-flex relative items-center mr-5 cursor-pointer">
-          <input type="checkbox" className="sr-only peer" checked={enabled} readOnly />
-          <div
-            onClick={() => {
-              setEnabled(!enabled);
-            }}
-            className="w-11 h-6 bg-gray-200 rounded-full peer  peer-focus:ring-green-300  peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent"
-          />
-        </label>
+    <div className="flex space-x-2">
+      <div className="relative flex flex-col items-center justify-center">
+        <div className="flex items-center space-x-1">
+          <span className="text-sm font-medium">{"Werte behalten"}</span>
+          <label className="inline-flex relative items-center mr-5 cursor-pointer">
+            <input type="checkbox" className="sr-only peer" checked={keepValues} readOnly />
+            <div
+              onClick={() => {
+                setKeepValues(!keepValues);
+              }}
+              className="w-11 h-6 bg-gray-200 rounded-full peer  peer-focus:ring-green-300  peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent"
+            />
+          </label>
+        </div>
+      </div>
+      <div className="relative flex flex-col items-center justify-center">
+        <div className="flex items-center space-x-1">
+          <span className="text-sm font-medium">{enabled ? "Komplex" : "Einfach"}</span>
+          <label className="inline-flex relative items-center mr-5 cursor-pointer">
+            <input type="checkbox" className="sr-only peer" checked={enabled} readOnly />
+            <div
+              onClick={() => {
+                setEnabled(!enabled);
+              }}
+              className="w-11 h-6 bg-gray-200 rounded-full peer  peer-focus:ring-green-300  peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent"
+            />
+          </label>
+        </div>
       </div>
     </div>
   );
@@ -82,11 +99,13 @@ export const ParcelsMask = () => {
   const [containedInArea, setContainedInArea] = useState<number>(1);
 
   const enabledState = useState<boolean>(false);
+  const keepValuesState = useState<boolean>(false);
+
   const [complex, setComplex] = enabledState;
-  //TODO: add another switch with option to keep values so you dont have to retype then again
+  const [keepValues, setKeepValues] = keepValuesState;
 
   return (
-    <Card title="Flurstücke hinzufügen" headerRight={parcelModeSwitchHeader(enabledState)}>
+    <Card title="Flurstücke hinzufügen" headerRight={parcelModeSwitchHeader(enabledState, keepValuesState)}>
       <div className="p-3 space-y-2 flex flex-col">
         <div className="flex flex-col space-y-2">
           <div className="flex flex-row space-x-2">
@@ -103,7 +122,7 @@ export const ParcelsMask = () => {
               isCorrectState={parcelIsCorrectState}
               title="Gemarkung"
               valueState={parcelState}
-              allowedCharsRegExp={/[^A-Za-zäöü -,]/g}
+              allowedCharsRegExp={/[^A-Za-zäöü --,]/g}
               placeholder="Lüdenscheid-Stadt"
             />
           </div>
@@ -240,22 +259,108 @@ export const ParcelsMask = () => {
                 } as ShareOfOwnership,
                 containedInArea: containedInArea,
               } as Parcel;
-              //TODO: add another switch with option to keep values so you dont have to retype then again
               const oldParcels = property.parcels ? property.parcels : ([] as Parcel[]);
               const newParcels = [...oldParcels, newParcel];
               setProperty({ ...property, parcels: newParcels });
-              setParcelCommunity("");
-              setParcel("");
-              setLandRegisterSheet("");
-              setCorridor("");
-              setParcelCounter("");
-              setParcelDenominator("");
-              setAreaOfTheLand("");
-              setParcelShareOfOwnerShipCounter("");
-              setParcelShareOfOwnerShipDenominator("");
-              setContainedInArea(1);
+              if (!keepValues) {
+                setParcelCommunity("");
+                setParcel("");
+                setLandRegisterSheet("");
+                setCorridor("");
+                setParcelCounter("");
+                setParcelDenominator("");
+                setAreaOfTheLand("");
+                setParcelShareOfOwnerShipCounter("");
+                setParcelShareOfOwnerShipDenominator("");
+                setContainedInArea(1);
+              }
             } else {
               //complex
+              const parcelSubString = parcelsString.split(",");
+              const newParcels = [] as Parcel[];
+
+              parcelSubString.forEach((parcelSubString) => {
+                if (parcelSubString.includes("-")) {
+                  const fromTo = parcelSubString.split("-");
+                  //TODO: make checks with error state in input so that  20-5 is not working
+                  for (let i = parseInt(fromTo[0]); i <= parseInt(fromTo[1]); i++) {
+                    const newParcel = {
+                      community: parcelCommunity,
+                      parcel: parcel,
+                      landRegisterSheet: parseInt(landRegisterSheet) ? parseInt(landRegisterSheet) : 0,
+                      corridor: parseInt(corridor) ? parseInt(corridor) : 0,
+                      parcelData: {
+                        counter: i,
+                        denominator: 0,
+                      } as ParcelData,
+                      areaOfTheLand: parseInt(areaOfTheLand) ? parseInt(areaOfTheLand) : 0,
+                      shareOfOwnership: {
+                        counter: parseInt(parcelShareOfOwnerShipCounter) ? parseInt(parcelShareOfOwnerShipCounter) : 0,
+                        denominator: parseInt(parcelShareOfOwnerShipDenominator) ? parseInt(parcelShareOfOwnerShipDenominator) : 0,
+                      } as ShareOfOwnership,
+                      containedInArea: containedInArea,
+                    } as Parcel;
+                    newParcels.push(newParcel);
+                  }
+                } else if (parcelSubString.length > 1) {
+                  const customParcelData = parcelSubString.split("/");
+                  const newParcel = {
+                    community: parcelCommunity,
+                    parcel: parcel,
+                    landRegisterSheet: parseInt(landRegisterSheet) ? parseInt(landRegisterSheet) : 0,
+                    corridor: parseInt(corridor) ? parseInt(corridor) : 0,
+                    parcelData: {
+                      counter: parseInt(customParcelData[0]) ? parseInt(customParcelData[0]) : 0,
+                      denominator: parseInt(customParcelData[1]) ? parseInt(customParcelData[1]) : 0,
+                    } as ParcelData,
+                    areaOfTheLand: parseInt(areaOfTheLand) ? parseInt(areaOfTheLand) : 0,
+                    shareOfOwnership: {
+                      counter: parseInt(parcelShareOfOwnerShipCounter) ? parseInt(parcelShareOfOwnerShipCounter) : 0,
+                      denominator: parseInt(parcelShareOfOwnerShipDenominator) ? parseInt(parcelShareOfOwnerShipDenominator) : 0,
+                    } as ShareOfOwnership,
+                    containedInArea: containedInArea,
+                  } as Parcel;
+                  newParcels.push(newParcel);
+                } else {
+                  const newParcel = {
+                    community: parcelCommunity,
+                    parcel: parcel,
+                    landRegisterSheet: parseInt(landRegisterSheet) ? parseInt(landRegisterSheet) : 0,
+                    corridor: parseInt(corridor) ? parseInt(corridor) : 0,
+                    parcelData: {
+                      counter: 0,
+                      denominator: 0,
+                    } as ParcelData,
+                    areaOfTheLand: parseInt(areaOfTheLand) ? parseInt(areaOfTheLand) : 0,
+                    shareOfOwnership: {
+                      counter: parseInt(parcelShareOfOwnerShipCounter) ? parseInt(parcelShareOfOwnerShipCounter) : 0,
+                      denominator: parseInt(parcelShareOfOwnerShipDenominator) ? parseInt(parcelShareOfOwnerShipDenominator) : 0,
+                    } as ShareOfOwnership,
+                    containedInArea: containedInArea,
+                  } as Parcel;
+                  newParcels.push(newParcel);
+                }
+              });
+              console.log(newParcels);
+              const oldParcels = property.parcels ? property.parcels : ([] as Parcel[]);
+              if (newParcels.length > 0) {
+                const newNewParcels = [...oldParcels, ...newParcels] as Parcel[];
+                setProperty({ ...property, parcels: newNewParcels });
+              }
+
+              if (!keepValues) {
+                setParcelCommunity("");
+                setParcel("");
+                setLandRegisterSheet("");
+                setCorridor("");
+                setParcelCounter("");
+                setParcelDenominator("");
+                setAreaOfTheLand("");
+                setParcelShareOfOwnerShipCounter("");
+                setParcelShareOfOwnerShipDenominator("");
+                setContainedInArea(1);
+                setParcelsString("");
+              }
             }
           }}
         />

@@ -41,7 +41,7 @@ const PropertyDetailsMask = () => {
           allowedCharsRegExp={/[^A-Za-zäöü -]/g}
           width={"min-w-[300px]"}
         />
-        <h1>Erstreckts sich über mehrere Gemeinden</h1>
+        <h1>TODO: Erstreckts sich über mehrere Gemeinden</h1>
         {property.areaOfTheLand ? (
           property.areaOfTheLand[0].areaOfTheLand + property.areaOfTheLand[1].areaOfTheLand + property.areaOfTheLand[2].areaOfTheLand > 10000 ? (
             <div>
