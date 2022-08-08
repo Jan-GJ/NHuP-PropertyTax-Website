@@ -1,5 +1,5 @@
 import { atom } from "recoil";
-import { EconomicEntities, Property } from "./types/property";
+import { EconomicEntities, Parcel, Property } from "./types/property";
 
 const defaultProperty: Property = {
   name: "Beispiel Straße 1, 12345 Beispielstadt",

@@ -84,14 +84,14 @@ const Input = ({
         ${
           error
             ? disabled
-              ? "border-red-500/50"
+              ? "border-red-500/50 text-white/50"
               : "border-red-500"
             : isCorrect
             ? disabled
-              ? "border-accent/50"
+              ? "border-accent/50 text-white/50"
               : "border-accent"
             : disabled
-            ? "border-gray-500/50"
+            ? "border-gray-500/50 text-white/50"
             : "border-gray-500"
         }
           border-[3px] focus:border-accent`}

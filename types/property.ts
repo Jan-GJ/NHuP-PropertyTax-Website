@@ -475,6 +475,7 @@ export const federalStates = [
 ];
 
 export const ownershipStructures = ["Alleineigentum einer natürlichen Person"];
+export const typeOfProperties = ["Einfamilienhaus"];
 
 export interface Property {
   name: string;

@@ -26,23 +26,8 @@ const parcelModeSwitchHeader = (enabledState: any) => {
   );
 };
 
-const ParcelElement = (parcel: Parcel, index: number) => {
-  return (
-    <div key={index} className={"flex flex-row justify-between"}>
-      <p>
-        {"Fläche in m"}
-        <sup>{"2"}</sup>
-        {parcel.areaOfTheLand}
-      </p>
-      <Button name="Löschen" />
-    </div>
-  );
-};
-
 export const ParcelsMask = () => {
   const [property, setProperty] = useRecoilState<Property>(propertyState);
-
-  const [parcels, setParcels] = useState<Parcel[]>([]);
 
   const corrridorState = useState<string>("");
   const [corridor, setCorridor] = corrridorState;
@@ -100,7 +85,6 @@ export const ParcelsMask = () => {
   const [complex, setComplex] = enabledState;
   //TODO: add another switch with option to keep values so you dont have to retype then again
 
-  console.log(parcels);
   return (
     <Card title="Flurstücke hinzufügen" headerRight={parcelModeSwitchHeader(enabledState)}>
       <div className="p-3 space-y-2 flex flex-col">
@@ -211,10 +195,28 @@ export const ParcelsMask = () => {
         </div>
         <div className="flex flex-row space-x-2">
           <h1>{"Enthalten in welcher Fläche?"}</h1>
-          <div className="flex flex-col w-[201px]">
-            <Button name="Fläche 1 (10€ pro qm)" disabled />
-            <Button name="Fläche 2 (50€ pro qm)" />
-            <Button name="Fläche 3 (80€ pro qm)" />
+          <div className="flex flex-col w-[201px] space-y-1">
+            <Button
+              name={`Fläche 1 ${property.areaOfTheLand ? `(${property.areaOfTheLand[0].areaOfTheLandValue}€ pro qm)` : ""}`}
+              disabled={containedInArea === 1}
+              onClick={() => {
+                setContainedInArea(1);
+              }}
+            />
+            <Button
+              name={`Fläche 2 ${property.areaOfTheLand ? `(${property.areaOfTheLand[1].areaOfTheLandValue}€ pro qm)` : ""}`}
+              disabled={containedInArea === 2}
+              onClick={() => {
+                setContainedInArea(2);
+              }}
+            />
+            <Button
+              name={`Fläche 3 ${property.areaOfTheLand ? `(${property.areaOfTheLand[2].areaOfTheLandValue}€ pro qm)` : ""}`}
+              disabled={containedInArea === 3}
+              onClick={() => {
+                setContainedInArea(3);
+              }}
+            />
           </div>
         </div>
         <Button
@@ -225,15 +227,23 @@ export const ParcelsMask = () => {
               const newParcel = {
                 community: parcelCommunity,
                 parcel: parcel,
-                landRegisterSheet: parseInt(landRegisterSheet),
-                corridor: parseInt(corridor),
-                parcelData: { counter: parseInt(parcelCounter), denominator: parseInt(parcelDenominator) } as ParcelData,
-                areaOfTheLand: parseInt(areaOfTheLand),
-                shareOfOwnership: { counter: parseInt(parcelShareOfOwnerShipCounter), denominator: parseInt(parcelShareOfOwnerShipDenominator) } as ShareOfOwnership,
+                landRegisterSheet: parseInt(landRegisterSheet) ? parseInt(landRegisterSheet) : 0,
+                corridor: parseInt(corridor) ? parseInt(corridor) : 0,
+                parcelData: {
+                  counter: parseInt(parcelCounter) ? parseInt(parcelCounter) : 0,
+                  denominator: parseInt(parcelDenominator) ? parseInt(parcelDenominator) : 0,
+                } as ParcelData,
+                areaOfTheLand: parseInt(areaOfTheLand) ? parseInt(areaOfTheLand) : 0,
+                shareOfOwnership: {
+                  counter: parseInt(parcelShareOfOwnerShipCounter) ? parseInt(parcelShareOfOwnerShipCounter) : 0,
+                  denominator: parseInt(parcelShareOfOwnerShipDenominator) ? parseInt(parcelShareOfOwnerShipDenominator) : 0,
+                } as ShareOfOwnership,
                 containedInArea: containedInArea,
               } as Parcel;
               //TODO: add another switch with option to keep values so you dont have to retype then again
-              setParcels([...parcels, newParcel]);
+              const oldParcels = property.parcels ? property.parcels : ([] as Parcel[]);
+              const newParcels = [...oldParcels, newParcel];
+              setProperty({ ...property, parcels: newParcels });
               setParcelCommunity("");
               setParcel("");
               setLandRegisterSheet("");
@@ -250,12 +260,6 @@ export const ParcelsMask = () => {
           }}
         />
       </div>
-      {parcels.length > 0 ? (
-        <div>
-          <h1 className="font-medium">{"Flurstücke:"}</h1>
-          <div className="p-3 flex flex-col space-y-1">{parcels.map((parcel, index) => ParcelElement(parcel, index))}</div>
-        </div>
-      ) : null}
     </Card>
   );
 };

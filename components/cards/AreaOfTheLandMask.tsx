@@ -9,6 +9,7 @@ function AreaOfTheLandMask() {
   const [property, setProperty] = useRecoilState<Property>(propertyState);
 
   const areaOfTheLandOneState = useState<String>("");
+  const [areaOfTheLandOne, setAreaOfTheLandOne] = areaOfTheLandOneState;
   const areaOfTheLandOneErrorState = useState<String>("");
   const areaOfTheLandOneIsCorrectState = useState<String>("");
 
@@ -17,6 +18,8 @@ function AreaOfTheLandMask() {
   const areaOfTheLandValueOneIsCorrectState = useState<String>("");
 
   const areaOfTheLandTwoState = useState<String>("");
+  const [areaOfTheLandTwo, setAreaOfTheLandTwo] = areaOfTheLandTwoState;
+
   const areaOfTheLandTwoErrorState = useState<String>("");
   const areaOfTheLandTwoIsCorrectState = useState<String>("");
 
@@ -25,6 +28,8 @@ function AreaOfTheLandMask() {
   const areaOfTheLandValueTwoIsCorrectState = useState<String>("");
 
   const areaOfTheLandThreeState = useState<String>("");
+  const [areaOfTheLandThree, setAreaOfTheLandThree] = areaOfTheLandThreeState;
+
   const areaOfTheLandThreeErrorState = useState<String>("");
   const areaOfTheLandThreeIsCorrectState = useState<String>("");
 
@@ -36,6 +41,31 @@ function AreaOfTheLandMask() {
     //set property areaofLandhere herer
   }, [setProperty]);
 
+  useEffect(() => {
+    if (property.parcels) {
+      const areaOneParcels = property.parcels.filter((parcel) => parcel.containedInArea === 1);
+      const areaTwoParcels = property.parcels.filter((parcel) => parcel.containedInArea === 2);
+      const areaThreeParcels = property.parcels.filter((parcel) => parcel.containedInArea === 3);
+      let areaOne = 0;
+      areaOneParcels?.forEach((parcel) => {
+        areaOne += parcel.areaOfTheLand ? parcel.areaOfTheLand : 0;
+      });
+      setAreaOfTheLandOne(areaOne.toString());
+
+      let areaTwo = 0;
+      areaTwoParcels?.forEach((parcel) => {
+        areaTwo += parcel.areaOfTheLand ? parcel.areaOfTheLand : 0;
+      });
+      setAreaOfTheLandTwo(areaTwo.toString());
+
+      let areaThree = 0;
+      areaThreeParcels?.forEach((parcel) => {
+        areaThree += parcel.areaOfTheLand ? parcel.areaOfTheLand : 0;
+      });
+      setAreaOfTheLandThree(areaThree.toString());
+    }
+  }, [property]);
+
   return (
     <Card title="Flächenangaben">
       <div className="p-3 flex flex-col space-y-1">
@@ -43,6 +73,7 @@ function AreaOfTheLandMask() {
           <p className="font-medium">{"Fläche 1"}</p>
           <div className="flex flex-row space-x-1">
             <Input
+              disabled
               valueState={areaOfTheLandOneState}
               errorState={areaOfTheLandOneErrorState}
               isCorrectState={areaOfTheLandOneIsCorrectState}
@@ -65,6 +96,7 @@ function AreaOfTheLandMask() {
           <p className="font-medium">{"Fläche 2"}</p>
           <div className="flex flex-row space-x-1">
             <Input
+              disabled
               valueState={areaOfTheLandTwoState}
               errorState={areaOfTheLandTwoErrorState}
               isCorrectState={areaOfTheLandTwoIsCorrectState}
@@ -87,6 +119,7 @@ function AreaOfTheLandMask() {
           <p className="font-medium">{"Fläche 3"}</p>
           <div className="flex flex-row space-x-1">
             <Input
+              disabled
               valueState={areaOfTheLandThreeState}
               errorState={areaOfTheLandThreeErrorState}
               isCorrectState={areaOfTheLandThreeIsCorrectState}
