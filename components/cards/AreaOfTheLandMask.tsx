@@ -87,14 +87,13 @@ function AreaOfTheLandMask() {
   }, [property, setAreaOfTheLandThree, setAreaOfTheLandTwo, setAreaOfTheLandOne]);
 
   return (
-    <Card title="Flächenangaben">
+    <Card title="Flächenangaben" maxHeight={"max-h-[235px]"}>
       <div className="p-3 flex flex-col space-y-1">
         <div>
           <p className="font-medium">{"Fläche 1"}</p>
           <div className="flex flex-row space-x-1">
             <Input
               nonEditable
-              placeholder="0"
               valueState={areaOfTheLandOneState}
               errorState={areaOfTheLandOneErrorState}
               isCorrectState={areaOfTheLandOneIsCorrectState}
@@ -111,7 +110,6 @@ function AreaOfTheLandMask() {
               isCorrectState={areaOfTheLandValueOneIsCorrectState}
               title={"Bodenrichtwert in €"}
               allowedCharsRegExp={/[^0-9]/g}
-              placeholder={"280"}
             />
           </div>
         </div>
@@ -120,7 +118,6 @@ function AreaOfTheLandMask() {
           <div className="flex flex-row space-x-1">
             <Input
               nonEditable
-              placeholder="0"
               valueState={areaOfTheLandTwoState}
               errorState={areaOfTheLandTwoErrorState}
               isCorrectState={areaOfTheLandTwoIsCorrectState}
@@ -137,7 +134,6 @@ function AreaOfTheLandMask() {
               isCorrectState={areaOfTheLandValueTwoIsCorrectState}
               title={"Bodenrichtwert in €"}
               allowedCharsRegExp={/[^0-9]/g}
-              placeholder={"15"}
             />
           </div>
         </div>
@@ -162,7 +158,6 @@ function AreaOfTheLandMask() {
               isCorrectState={areaOfTheLandValueThreeIsCorrectState}
               title={"Bodenrichtwert in €"}
               allowedCharsRegExp={/[^0-9]/g}
-              placeholder={"20"}
             />
           </div>
         </div> */}

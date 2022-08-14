@@ -116,8 +116,8 @@ export const ParcelsMask = () => {
         setParcel(parcel);
         setParcelIsCorrect(true);
 
-        setLandRegisterSheet(landRegisterSheets[indexOfParcel]);
-        setLandRegisterSheetIsCorrect(true);
+        //    setLandRegisterSheet(landRegisterSheets[indexOfParcel]);
+        //   setLandRegisterSheetIsCorrect(true);
       }
     }
   }, [property, setParcel, setParcelIsCorrect, setLandRegisterSheetIsCorrect]);
@@ -135,7 +135,6 @@ export const ParcelsMask = () => {
               suggestions={comunities}
               allowedCharsRegExp={/[^A-Za-zäöü/ ,-]/g}
               valueState={parcelCommunityState}
-              placeholder="Lüdenscheid"
             />
             <Input
               errorState={parcelErrorState}
@@ -145,7 +144,6 @@ export const ParcelsMask = () => {
               allowedEndResults={parcels}
               valueState={parcelState}
               allowedCharsRegExp={/[^A-Za-zäöü/ ,-]/g}
-              placeholder="Lüdenscheid-Stadt"
             />
           </div>
           <div className="flex flex-row space-x-2">
@@ -155,17 +153,15 @@ export const ParcelsMask = () => {
               title={"Flur"}
               valueState={corrridorState}
               allowedCharsRegExp={/[^0-9]/g}
-              placeholder={"1"}
+              maxLength={3}
             />
             <Input
               errorState={landRegisterSheetErrorState}
               isCorrectState={landRegisterSheetIsCorrectState}
               title={"Grundbuchblatt"}
               valueState={landRegisterSheetState}
-              suggestions={landRegisterSheets}
-              allowedEndResults={landRegisterSheets}
               allowedCharsRegExp={/[^0-9]/g}
-              placeholder={"52124"}
+              maxLength={6}
             />
           </div>
           <Input
@@ -179,7 +175,7 @@ export const ParcelsMask = () => {
             }
             valueState={areaOfTheLandState}
             allowedCharsRegExp={/[^0-9]/g}
-            placeholder={"250"}
+            maxLength={15}
           />
           {!complex ? (
             <div className="flex flex-row space-x-2">
@@ -190,7 +186,7 @@ export const ParcelsMask = () => {
                   title="Flurstück: Zähler"
                   valueState={parcelCounterState}
                   allowedCharsRegExp={/[^0-9]/g}
-                  placeholder={"10"}
+                  maxLength={5}
                 />
                 <Input
                   errorState={parcelDenominatorErrorState}
@@ -198,7 +194,7 @@ export const ParcelsMask = () => {
                   title="Flurstück: Nenner"
                   valueState={parcelDenominatorState}
                   allowedCharsRegExp={/[^0-9]/g}
-                  placeholder={"5"}
+                  maxLength={4}
                 />
               </div>
             </div>
@@ -218,13 +214,14 @@ export const ParcelsMask = () => {
           )}
 
           <div className="flex flex-row space-x-2">
+            {/*  TODO: anteile ausrechnen wenn 520/10000 */}
             <Input
               errorState={parcelShareOfOwnerShipCounterErrorState}
               isCorrectState={parcelShareOfOwnerShipCounterIsCorrectState}
               title={"Zur W.E. geh. Anteil: Zähler"}
               valueState={parcelShareOfOwnerShipCounterState}
               allowedCharsRegExp={/[^0-9]/g}
-              placeholder={"50"}
+              maxLength={11}
             />
             <Input
               errorState={parcelShareOfOwnerShipDenominatorErrorState}
@@ -232,7 +229,7 @@ export const ParcelsMask = () => {
               title={"Zur W.E. geh. Anteil: Nenner"}
               valueState={parcelShareOfOwnerShipDenominatorState}
               allowedCharsRegExp={/[^0-9]/g}
-              placeholder="100"
+              maxLength={7}
             />
           </div>
         </div>

@@ -35,6 +35,9 @@ export interface CardProps {
   children: any;
   title: string;
   headerRight?: any;
+  backgroundColor?: string;
+  borderColor?: string;
+  maxHeight?: string;
 }
 
 export interface LogoBannerProps {

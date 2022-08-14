@@ -9,16 +9,16 @@ import { EconomicEntities, Property } from "../types/property";
 import { propertyState } from "../Atoms";
 
 import { getfilledPreRegistrationWorkbook, getPreRegistrationWorkbook } from "../Utils";
+
 import TypeOfEconomicPropertyMask from "../components/cards/TypeOfEconomicEntityMask";
-import ParcelsMask from "../components/cards/ParcelsMask";
-import Summary from "../components/cards/Summary";
-import Button from "../components/ui/Button";
-import Header from "../components/ui/Header";
 import PropertyDetailsMask from "../components/cards/PropertyDetailsMask";
 import AreaOfTheLandMask from "../components/cards/AreaOfTheLandMask";
-import ParcelElement from "../components/ui/ParcelElement";
+import ParcelsMask from "../components/cards/ParcelsMask";
+import Summary from "../components/cards/Summary";
 
-//TODO: add maxLength from api website to each input
+import ParcelElement from "../components/ui/ParcelElement";
+import Button from "../components/ui/Button";
+import Header from "../components/ui/Header";
 
 const Home: NextPage = () => {
   const property = useRecoilValue<Property>(propertyState);
@@ -30,22 +30,23 @@ const Home: NextPage = () => {
         <meta httpEquiv="content-type" content="text/html; charset=utf-8" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div>
+      <div className="p-2">
         <Header />
-        <div className="px-2 flex-col ">
-          <div className="flex space-x-2">
+        <div className="px-2 flex-col space-y-1">
+          <div className="flex space-x-1">
             <TypeOfEconomicPropertyMask />
             {property.economicEntityType !== EconomicEntities.none ? <PropertyDetailsMask /> : null}
-            {property.economicEntityType !== EconomicEntities.none ? <AreaOfTheLandMask /> : null}
+            <div className="flex flex-col space-y-1">
+              {property.economicEntityType !== EconomicEntities.none ? <AreaOfTheLandMask /> : null}
+              {property.economicEntityType !== EconomicEntities.none ? <ParcelsMask /> : null}
+            </div>
           </div>
-          <div className="flex space-x-2 justify-center">{property.economicEntityType !== EconomicEntities.none ? <ParcelsMask /> : null}</div>
-
           {property.parcels ? (
             property.parcels.length > 0 ? (
-              <div className="">
-                <h1 className="font-medium">{"Flurstücke:"}</h1>
+              <div className="bg-slate-300 rounded p-2 border-t-[5px] border-slate-600">
+                <h1 className="font-medium pb-2">{"Flurstücke:"}</h1>
                 <div className="p-2 overflow-y-auto max-h-[400px]">
-                  <table className="min-w-full shadow-md rounded">
+                  <table className="min-w-full bg-white shadow-md rounded">
                     <thead>
                       <tr>
                         <th>{"Gemeinde"}</th>
@@ -79,7 +80,7 @@ const Home: NextPage = () => {
             <Summary />
           </div> */}
           {property.economicEntityType !== EconomicEntities.none ? (
-            <div className="pb-2">
+            <div className="py-2">
               {/* Download filled preRegistrationForm button */}
               <Button
                 onClick={() => {

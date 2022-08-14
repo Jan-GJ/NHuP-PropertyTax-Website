@@ -32,10 +32,9 @@ const PropertyDetailsMask = () => {
           errorState={ownershipStructureTextErrorState}
           isCorrectState={ownershipStructureTextIsCorrectState}
           title="Eingentumsverhätnisse"
-          placeholder="Alleineigentum einer natürlichen Person"
           allowedEndResults={ownershipStructures}
           suggestions={ownershipStructures}
-          allowedCharsRegExp={/[^A-Za-zäöü -]/g}
+          allowedCharsRegExp={/[^A-Za-zäßöü -]/g}
           width={"min-w-[300px]"}
         />
         {property.economicEntityType !== EconomicEntities.undeveloped ? (
@@ -44,7 +43,6 @@ const PropertyDetailsMask = () => {
             errorState={typeOfPropertyTextErrorState}
             isCorrectState={typeOfPropertyTextIsCorrectState}
             title="Art des Grundstücks"
-            placeholder="Einfamilienhaus"
             allowedEndResults={typeOfProperties}
             suggestions={typeOfProperties}
             allowedCharsRegExp={/[^A-Za-zäöü -]/g}

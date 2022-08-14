@@ -118,19 +118,22 @@ const Input = ({
       />
       {loading ? <div className="loadingIndicator" /> : null}
       {showSuggestions ? (
-        <div className="py-1">
+        <div className="bg-white rounded-b">
           {filteredSuggestions?.map((suggestion, index) => (
-            <div
-              className="bg-gray-300 p-1 hover:bg-gray-300/50 cursor-pointer"
-              onClick={() => {
-                setValue(suggestion);
-                checkValue(suggestion);
-                updateSuggestions(suggestion);
-                setShowSuggestions(false);
-              }}
-              key={index}
-            >
-              <p>{suggestion}</p>
+            <div key={index}>
+              {index + 1 > maxSuggestions ? null : (
+                <div
+                  className=" py-2 px-1 border-t-[2px] border-accent hover:bg-gray-300/50 cursor-pointer "
+                  onClick={() => {
+                    setValue(suggestion);
+                    checkValue(suggestion);
+                    updateSuggestions(suggestion);
+                    setShowSuggestions(false);
+                  }}
+                >
+                  <p>{suggestion}</p>
+                </div>
+              )}
             </div>
           ))}
         </div>

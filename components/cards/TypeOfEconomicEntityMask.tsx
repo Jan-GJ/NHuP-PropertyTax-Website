@@ -62,6 +62,7 @@ const TypeOfEconomicPropertyMask = () => {
   const [multipleCommunities, setMultipleCommunities] = useState<boolean>(false);
   const [canSelectTypeOfEconomicEntity, setCanSelectTypeOfEconomicEntity] = useState<boolean>(false);
   const [typeOfEconomicEntity, setTypeOfEconomicEntity] = useState<EconomicEntities>(EconomicEntities.none);
+  const [exemptionOrBenefitAvailable, setExemptionOrBenefitAvailable] = useState<boolean>(false);
 
   const debouncedUpdateZipInfo = useCallback(
     debounce((zip) => {
@@ -133,18 +134,20 @@ const TypeOfEconomicPropertyMask = () => {
       community: community,
       reference: reference,
       multiCommunities: multipleCommunities,
+      exemptionOrBenefitAvailable: exemptionOrBenefitAvailable,
     });
-  }, [setProperty, name, typeOfEconomicEntity, federalState, zip, street, houseNumber, city, community, reference, multipleCommunities]);
+  }, [setProperty, name, typeOfEconomicEntity, federalState, zip, street, houseNumber, city, community, reference, multipleCommunities, exemptionOrBenefitAvailable]);
+
+  const borderColor = canSelectTypeOfEconomicEntity && typeOfEconomicEntity !== EconomicEntities.none ? "border-yellow-500" : "border-red-500"; //TODO: check all iscorrect availabe and turn green then
 
   return (
-    <Card title="Informationen zur Wirtschaftlichen Einheit">
+    <Card title="Informationen zur Wirtschaftlichen Einheit" borderColor={borderColor}>
       <div className="p-3 space-y-2 flex flex-col">
         <div className="flex space-x-1">
           <Input
             errorState={federalStateErrorState}
             isCorrectState={federalStateIsCorrectState}
             title="Bundesland"
-            placeholder="Nordrhein-Westfalen"
             valueState={federalStateTextState}
             allowedEndResults={federalStates}
             suggestions={federalStates}
@@ -156,7 +159,6 @@ const TypeOfEconomicPropertyMask = () => {
             isCorrectState={referenceIsCorrectState}
             title="Aktenzeichen / EW-AZ"
             maxLength={30}
-            placeholder="19912312340010001"
             allowedCharsRegExp={/[^0-9]/g}
             valueState={referenceState}
           />
@@ -166,7 +168,6 @@ const TypeOfEconomicPropertyMask = () => {
             title="Gemeinde"
             allowedEndResults={comunities}
             suggestions={comunities}
-            placeholder="Lüdenscheid"
             allowedCharsRegExp={/[^A-Za-zäöü/ ,-]/g}
             valueState={communityState}
             isCorrectState={communityIsCorrectState}
@@ -175,16 +176,14 @@ const TypeOfEconomicPropertyMask = () => {
         </div>
         <div className="flex space-x-1">
           <Input
-            placeholder="Parkstraße"
             errorState={streetErrorState}
             isCorrectState={streetIsCorrectState}
-            title="Straße (TODO: Google API)"
+            title="Straße (Google Street API)"
             maxLength={25}
             valueState={streetState}
-            allowedCharsRegExp={/[^A-Za-zäöü -]/g}
+            allowedCharsRegExp={/[^A-Za-zßäöü -]/g}
           />
           <Input
-            placeholder="2"
             errorState={houseNumberErrorState}
             isCorrectState={houseNumberIsCorrectState}
             title="Hausnummer"
@@ -196,7 +195,6 @@ const TypeOfEconomicPropertyMask = () => {
         <div className="flex space-x-1">
           <Input
             title="PLZ"
-            placeholder="58509"
             valueState={zipState}
             errorState={zipErrorState}
             isCorrectState={zipIsCorrectState}
@@ -204,49 +202,47 @@ const TypeOfEconomicPropertyMask = () => {
             allowedCharsRegExp={/[^0-9.]/g}
             maxLength={5}
           />
-          <Input
-            title="Ort"
-            placeholder="Lüdenscheid"
-            valueState={cityState}
-            errorState={cityErrorState}
-            isCorrectState={cityIsCorrectState}
-            allowedCharsRegExp={/[^A-Za-zäöü/ ,-]/g}
-            maxLength={25}
-          />
+          <Input title="Ort" valueState={cityState} errorState={cityErrorState} isCorrectState={cityIsCorrectState} allowedCharsRegExp={/[^A-Za-zäöü/ ,-]/g} maxLength={25} />
         </div>
 
         <div className="flex space-x-1">
-          <Input
-            width="min-w-[404px]"
-            errorState={nameErrorState}
-            isCorrectState={nameIsCorrectState}
-            valueState={nameState}
-            title="Bezeichnung"
-            placeholder="Parkstraße 2,58509 Lüdenscheid"
-            required
-          />
-        </div>
-        <div className="flex space-x-1">
-          <div className="relative flex flex-col items-center justify-center">
-            <div className="flex items-center space-x-1">
-              <span className="text-sm max-w-[350px]">
-                {"Erstreckt sich das Grundstück oder der Betrieb der Land- und Forstwirtschaft über mehrere hebeberechtigte Gemeinden?"}
-              </span>
-              <label className="inline-flex relative items-center mr-5 cursor-pointer">
-                <input type="checkbox" className="sr-only peer" checked={multipleCommunities} readOnly />
-                <div
-                  onClick={() => {
-                    setMultipleCommunities(!multipleCommunities);
-                  }}
-                  className="w-11 h-6 bg-gray-200 rounded-full peer  peer-focus:ring-green-300  peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent"
-                />
-              </label>
-            </div>
-          </div>
+          <Input width="min-w-[404px]" errorState={nameErrorState} isCorrectState={nameIsCorrectState} valueState={nameState} title="Bezeichnung" required />
         </div>
         {canSelectTypeOfEconomicEntity ? (
           <div className="flex soace-x-1 flex-col max-w-[404px] space-y-1">
-            <h1>{"Wirtschaftliche Einheit: "}</h1>
+            <div className="flex space-x-1 py-1">
+              <div className="relative flex flex-col items-center justify-center">
+                <div className="flex flex-row justify-between items-center space-x-2">
+                  <span className="text-sm max-w-[350px]">{"Mehrere hebeberechtigte Gemeinden?"}</span>
+                  <label className="inline-flex relative items-center mr-5 cursor-pointer">
+                    <input type="checkbox" className="sr-only peer" checked={multipleCommunities} readOnly />
+                    <div
+                      onClick={() => {
+                        setMultipleCommunities(!multipleCommunities);
+                      }}
+                      className="w-11 h-6 bg-gray-200 rounded-full peer  peer-focus:ring-green-300  peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent"
+                    />
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div className="flex space-x-1 py-1">
+              <div className="relative flex flex-col items-center justify-center">
+                <div className="flex flex-row justify-between items-center space-x-2">
+                  <span className="text-sm max-w-[350px]">{"Steuerbefreiung/vergünstigung?"}</span>
+                  <label className="inline-flex relative items-center mr-5 cursor-pointer">
+                    <input type="checkbox" className="sr-only peer" checked={exemptionOrBenefitAvailable} readOnly />
+                    <div
+                      onClick={() => {
+                        setExemptionOrBenefitAvailable(!exemptionOrBenefitAvailable);
+                      }}
+                      className="w-11 h-6 bg-gray-200 rounded-full peer  peer-focus:ring-green-300  peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent"
+                    />
+                  </label>
+                </div>
+              </div>
+            </div>
+
             {/* TypeofEconomicEntity Buttons */}
             <Button
               name={"Unbebaut"}
