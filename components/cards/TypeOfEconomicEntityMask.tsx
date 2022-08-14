@@ -2,11 +2,12 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useRecoilState } from "recoil";
 import { debounce } from "lodash";
 import { propertyState } from "../../Atoms";
-import { EconomicEntities, Property, federalStates } from "../../types/property";
+import { EconomicEntities, Property } from "../../types/property";
 import { getZipInfo } from "../../Utils";
 import Button from "../ui/Button";
 import Input from "../ui/Input";
 import Card from "../layout/Card";
+import { comunities, federalStates } from "../../types/lists";
 
 const TypeOfEconomicPropertyMask = () => {
   const [property, setProperty] = useRecoilState<Property>(propertyState);
@@ -58,6 +59,7 @@ const TypeOfEconomicPropertyMask = () => {
   const referenceErrorState = useState<string>("");
   const referenceIsCorrectState = useState<boolean>(false);
 
+  const [multipleCommunities, setMultipleCommunities] = useState<boolean>(false);
   const [canSelectTypeOfEconomicEntity, setCanSelectTypeOfEconomicEntity] = useState<boolean>(false);
   const [typeOfEconomicEntity, setTypeOfEconomicEntity] = useState<EconomicEntities>(EconomicEntities.none);
 
@@ -72,6 +74,13 @@ const TypeOfEconomicPropertyMask = () => {
           }
           if (city.length === 0) {
             setCity(zipInfo.city);
+            setCityIsCorrect(true);
+
+            const community = comunities.find((community) => zipInfo.city.includes(community));
+            if (community) {
+              setCommunity(community);
+              setCommunityIsCorrect(true);
+            }
           }
           setZipIsCorrect(true);
         } else {
@@ -113,6 +122,7 @@ const TypeOfEconomicPropertyMask = () => {
 
   useEffect(() => {
     setProperty({
+      ...property,
       name: name,
       economicEntityType: typeOfEconomicEntity,
       federalStateUid: federalState,
@@ -122,8 +132,9 @@ const TypeOfEconomicPropertyMask = () => {
       city: city,
       community: community,
       reference: reference,
+      multiCommunities: multipleCommunities,
     });
-  }, [setProperty, name, typeOfEconomicEntity, federalState, zip, street, houseNumber, city, community, reference]);
+  }, [setProperty, name, typeOfEconomicEntity, federalState, zip, street, houseNumber, city, community, reference, multipleCommunities]);
 
   return (
     <Card title="Informationen zur Wirtschaftlichen Einheit">
@@ -152,10 +163,12 @@ const TypeOfEconomicPropertyMask = () => {
         </div>
         <div className="flex space-x-1 ">
           <Input
-            title="Gemeinde / Kreis"
-            placeholder="Lüdenscheid, Stadt"
+            title="Gemeinde"
+            allowedEndResults={comunities}
+            suggestions={comunities}
+            placeholder="Lüdenscheid"
+            allowedCharsRegExp={/[^A-Za-zäöü/ ,-]/g}
             valueState={communityState}
-            allowedCharsRegExp={/[^A-Za-zäöü -,]/g}
             isCorrectState={communityIsCorrectState}
             errorState={communityErrorState}
           />
@@ -165,7 +178,7 @@ const TypeOfEconomicPropertyMask = () => {
             placeholder="Parkstraße"
             errorState={streetErrorState}
             isCorrectState={streetIsCorrectState}
-            title="Straße"
+            title="Straße (TODO: Google API)"
             maxLength={25}
             valueState={streetState}
             allowedCharsRegExp={/[^A-Za-zäöü -]/g}
@@ -175,30 +188,30 @@ const TypeOfEconomicPropertyMask = () => {
             errorState={houseNumberErrorState}
             isCorrectState={houseNumberIsCorrectState}
             title="Hausnummer"
-            maxLength={14}
             valueState={houseNumberState}
             allowedCharsRegExp={/[^0-9/-A-Za-z]/g}
+            maxLength={14}
           />
         </div>
         <div className="flex space-x-1">
           <Input
-            isCorrectState={zipIsCorrectState}
-            errorState={zipErrorState}
-            loading={zipLoading}
-            valueState={zipState}
-            allowedCharsRegExp={/[^0-9.]/g}
             title="PLZ"
             placeholder="58509"
+            valueState={zipState}
+            errorState={zipErrorState}
+            isCorrectState={zipIsCorrectState}
+            loading={zipLoading}
+            allowedCharsRegExp={/[^0-9.]/g}
             maxLength={5}
           />
           <Input
             title="Ort"
-            maxLength={25}
             placeholder="Lüdenscheid"
-            isCorrectState={cityIsCorrectState}
-            errorState={cityErrorState}
             valueState={cityState}
-            allowedCharsRegExp={/[^A-Za-z./-üäö]/g}
+            errorState={cityErrorState}
+            isCorrectState={cityIsCorrectState}
+            allowedCharsRegExp={/[^A-Za-zäöü/ ,-]/g}
+            maxLength={25}
           />
         </div>
 
@@ -212,6 +225,24 @@ const TypeOfEconomicPropertyMask = () => {
             placeholder="Parkstraße 2,58509 Lüdenscheid"
             required
           />
+        </div>
+        <div className="flex space-x-1">
+          <div className="relative flex flex-col items-center justify-center">
+            <div className="flex items-center space-x-1">
+              <span className="text-sm max-w-[350px]">
+                {"Erstreckt sich das Grundstück oder der Betrieb der Land- und Forstwirtschaft über mehrere hebeberechtigte Gemeinden?"}
+              </span>
+              <label className="inline-flex relative items-center mr-5 cursor-pointer">
+                <input type="checkbox" className="sr-only peer" checked={multipleCommunities} readOnly />
+                <div
+                  onClick={() => {
+                    setMultipleCommunities(!multipleCommunities);
+                  }}
+                  className="w-11 h-6 bg-gray-200 rounded-full peer  peer-focus:ring-green-300  peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent"
+                />
+              </label>
+            </div>
+          </div>
         </div>
         {canSelectTypeOfEconomicEntity ? (
           <div className="flex soace-x-1 flex-col max-w-[404px] space-y-1">

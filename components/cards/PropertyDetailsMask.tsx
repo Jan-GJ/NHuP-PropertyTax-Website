@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { propertyState } from "../../Atoms";
-import { EconomicEntities, ownershipStructure, ownershipStructures, Property, typeOfProperties } from "../../types/property";
+import { ownershipStructures, typeOfProperties } from "../../types/lists";
+import { EconomicEntities, ownershipStructure, Property } from "../../types/property";
 import Card from "../layout/Card";
 import Input from "../ui/Input";
 
@@ -32,7 +33,7 @@ const PropertyDetailsMask = () => {
           isCorrectState={ownershipStructureTextIsCorrectState}
           title="Eingentumsverhätnisse"
           placeholder="Alleineigentum einer natürlichen Person"
-          /*  allowedEndResults={ownershipStructures} TODO: make show error only when wrong entry not only allowed*/
+          allowedEndResults={ownershipStructures}
           suggestions={ownershipStructures}
           allowedCharsRegExp={/[^A-Za-zäöü -]/g}
           width={"min-w-[300px]"}

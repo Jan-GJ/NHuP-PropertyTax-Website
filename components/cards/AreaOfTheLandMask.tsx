@@ -38,7 +38,6 @@ function AreaOfTheLandMask() {
   const areaOfTheLandValueThreeErrorState = useState<string>("");
   const areaOfTheLandValueThreeIsCorrectState = useState<string>("");
 
-  //TODO: this doesnt work somehow
   useEffect(() => {
     let newAreaOfTheLand = [
       { areaOfTheLand: 0, areaOfTheLandValue: 0 },
@@ -46,14 +45,21 @@ function AreaOfTheLandMask() {
       { areaOfTheLand: 0, areaOfTheLandValue: 0 },
     ] as AreaOfTheLand[];
     if (property.areaOfTheLand) {
+      console.log("true!!!!!!!!!!!!!!!");
       newAreaOfTheLand = [
-        { areaOfTheLand: property.areaOfTheLand[0].areaOfTheLand, areaOfTheLandValue: parseInt(areaOfTheLandValueOne) ? parseInt(areaOfTheLandValueOne) : 0 },
-        { areaOfTheLand: property.areaOfTheLand[1].areaOfTheLand, areaOfTheLandValue: parseInt(areaOfTheLandValueTwo) ? parseInt(areaOfTheLandValueTwo) : 0 },
-        { areaOfTheLand: property.areaOfTheLand[2].areaOfTheLand, areaOfTheLandValue: parseInt(areaOfTheLandValueThree) ? parseInt(areaOfTheLandValueThree) : 0 },
+        {
+          areaOfTheLand: parseInt(areaOfTheLandOne) ? parseInt(areaOfTheLandOne) : 0,
+          areaOfTheLandValue: parseInt(areaOfTheLandValueOne) ? parseInt(areaOfTheLandValueOne) : 0,
+        },
+        { areaOfTheLand: parseInt(areaOfTheLandTwo) ? parseInt(areaOfTheLandTwo) : 0, areaOfTheLandValue: parseInt(areaOfTheLandValueTwo) ? parseInt(areaOfTheLandValueTwo) : 0 },
+        {
+          areaOfTheLand: parseInt(areaOfTheLandThree) ? parseInt(areaOfTheLandThree) : 0,
+          areaOfTheLandValue: parseInt(areaOfTheLandValueThree) ? parseInt(areaOfTheLandValueThree) : 0,
+        },
       ] as AreaOfTheLand[];
     }
     setProperty({ ...property, areaOfTheLand: newAreaOfTheLand });
-  }, [setProperty, areaOfTheLandValueOne, areaOfTheLandValueTwo, areaOfTheLandValueThree]);
+  }, [setProperty, areaOfTheLandValueOne, areaOfTheLandValueTwo, areaOfTheLandValueThree, areaOfTheLandOne, areaOfTheLandTwo, areaOfTheLandThree]);
 
   useEffect(() => {
     if (property.parcels) {
@@ -88,6 +94,7 @@ function AreaOfTheLandMask() {
           <div className="flex flex-row space-x-1">
             <Input
               nonEditable
+              placeholder="0"
               valueState={areaOfTheLandOneState}
               errorState={areaOfTheLandOneErrorState}
               isCorrectState={areaOfTheLandOneIsCorrectState}
@@ -113,6 +120,7 @@ function AreaOfTheLandMask() {
           <div className="flex flex-row space-x-1">
             <Input
               nonEditable
+              placeholder="0"
               valueState={areaOfTheLandTwoState}
               errorState={areaOfTheLandTwoErrorState}
               isCorrectState={areaOfTheLandTwoIsCorrectState}

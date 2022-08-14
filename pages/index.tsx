@@ -32,15 +32,14 @@ const Home: NextPage = () => {
       </Head>
       <div>
         <Header />
-        <div className="px-2 flex-col">
+        <div className="px-2 flex-col ">
           <div className="flex space-x-2">
             <TypeOfEconomicPropertyMask />
             {property.economicEntityType !== EconomicEntities.none ? <PropertyDetailsMask /> : null}
             {property.economicEntityType !== EconomicEntities.none ? <AreaOfTheLandMask /> : null}
-            {property.economicEntityType !== EconomicEntities.none ? <ParcelsMask /> : null}
-            {/*  <Summary /> */}
           </div>
-          {/* Download filled preRegistrationForm button */}
+          <div className="flex space-x-2 justify-center">{property.economicEntityType !== EconomicEntities.none ? <ParcelsMask /> : null}</div>
+
           {property.parcels ? (
             property.parcels.length > 0 ? (
               <div className="">
@@ -49,7 +48,7 @@ const Home: NextPage = () => {
                   <table className="min-w-full shadow-md rounded">
                     <thead>
                       <tr>
-                        <th>{"Gemeinde / Kreis"}</th>
+                        <th>{"Gemeinde"}</th>
                         <th>{"Gemarkung"}</th>
                         <th>{"Flur"}</th>
                         <th>{"Grundbuchblatt"}</th>
@@ -76,8 +75,12 @@ const Home: NextPage = () => {
               </div>
             ) : null
           ) : null}
+          {/*   <div className="flex justify-center">
+            <Summary />
+          </div> */}
           {property.economicEntityType !== EconomicEntities.none ? (
             <div className="pb-2">
+              {/* Download filled preRegistrationForm button */}
               <Button
                 onClick={() => {
                   setPreRegistrationFormLoading(true);

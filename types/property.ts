@@ -63,8 +63,8 @@ export interface ShareOfOwnership {
 export type containedInAreaType = 1 | 2 | 3;
 
 export interface Parcel {
-  community?: string /* TODO: get list for recomendation in ui from voreffasungsbogen */;
-  parcel?: string /* TODO: get list for recomendation in ui from voreffasungsbogen */;
+  community?: string;
+  parcel?: string;
   landRegisterSheet?: number;
   corridor?: number;
   parcelData: ParcelData;
@@ -452,31 +452,6 @@ export enum EconomicEntities {
   LandAndForestry = 3,
   none = -1,
 }
-
-export const economicEntities = ["Unbebaut", "Bebaut", "Land und Forstwirtschaft"];
-
-export const federalStates = [
-  "Bayern",
-  "Berlin",
-  "Baden-Würtemberg",
-  "Brandenburg",
-  "Bremen",
-  "Hamburg",
-  "Hessen",
-  "Mecklenburg-Vorpommern",
-  "Rheinland-Pfalz",
-  "Nordrhein-Westfalen",
-  "Saarland",
-  "Sachsen",
-  "Sachsen-Anhalt",
-  "Schleswig-Holstein",
-  "Niedersachsen",
-  "Thüringen",
-];
-
-export const ownershipStructures = ["Alleineigentum einer natürlichen Person"];
-export const typeOfProperties = ["Einfamilienhaus"];
-
 export interface Property {
   name: string;
   street?: string;

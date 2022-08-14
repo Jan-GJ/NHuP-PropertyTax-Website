@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { propertyState } from "../../Atoms";
+import { comunities, landRegisterSheets, parcels } from "../../types/lists";
 import { Parcel, ParcelData, Property, ShareOfOwnership } from "../../types/property";
 import Card from "../layout/Card";
 import Button from "../ui/Button";
@@ -54,12 +55,15 @@ export const ParcelsMask = () => {
   const parcelState = useState<string>("");
   const [parcel, setParcel] = parcelState;
   const parcelErrorState = useState<string>("");
-  const parcelIsCorrectState = useState<string>("");
+
+  const parcelIsCorrectState = useState<boolean>(false);
+  const [parcelIsCorrect, setParcelIsCorrect] = parcelIsCorrectState;
 
   const landRegisterSheetState = useState<string>("");
   const [landRegisterSheet, setLandRegisterSheet] = landRegisterSheetState;
   const landRegisterSheetErrorState = useState<string>("");
-  const landRegisterSheetIsCorrectState = useState<string>("");
+  const landRegisterSheetIsCorrectState = useState<boolean>(false);
+  const [landRegisterSheetIsCorrect, setLandRegisterSheetIsCorrect] = landRegisterSheetIsCorrectState;
 
   const parcelCommunityState = useState<string>(property.community ? property.community : "");
   const [parcelCommunity, setParcelCommunity] = parcelCommunityState;
@@ -99,10 +103,24 @@ export const ParcelsMask = () => {
   const [containedInArea, setContainedInArea] = useState<number>(1);
 
   const enabledState = useState<boolean>(false);
-  const keepValuesState = useState<boolean>(false);
+  const keepValuesState = useState<boolean>(true);
 
   const [complex, setComplex] = enabledState;
   const [keepValues, setKeepValues] = keepValuesState;
+
+  useEffect(() => {
+    if (property.community && keepValues) {
+      const parcel = parcels.find((parcel) => (property.community ? parcel.includes(property.community) : false));
+      if (parcel) {
+        const indexOfParcel = parcels.indexOf(parcel);
+        setParcel(parcel);
+        setParcelIsCorrect(true);
+
+        setLandRegisterSheet(landRegisterSheets[indexOfParcel]);
+        setLandRegisterSheetIsCorrect(true);
+      }
+    }
+  }, [property, setParcel, setParcelIsCorrect, setLandRegisterSheetIsCorrect]);
 
   return (
     <Card title="Flurstücke hinzufügen" headerRight={parcelModeSwitchHeader(enabledState, keepValuesState)}>
@@ -112,17 +130,21 @@ export const ParcelsMask = () => {
             <Input
               errorState={parcelCommunityErrorState}
               isCorrectState={parcelCommunityIsCorrect}
-              title="Gemeinde / Kreis"
+              title="Gemeinde"
+              allowedEndResults={comunities}
+              suggestions={comunities}
+              allowedCharsRegExp={/[^A-Za-zäöü/ ,-]/g}
               valueState={parcelCommunityState}
-              allowedCharsRegExp={/[^A-Za-zäöü -,]/g}
-              placeholder="Lüdenscheid, Stadt"
+              placeholder="Lüdenscheid"
             />
             <Input
               errorState={parcelErrorState}
               isCorrectState={parcelIsCorrectState}
               title="Gemarkung"
+              suggestions={parcels}
+              allowedEndResults={parcels}
               valueState={parcelState}
-              allowedCharsRegExp={/[^A-Za-zäöü --,]/g}
+              allowedCharsRegExp={/[^A-Za-zäöü/ ,-]/g}
               placeholder="Lüdenscheid-Stadt"
             />
           </div>
@@ -140,7 +162,9 @@ export const ParcelsMask = () => {
               isCorrectState={landRegisterSheetIsCorrectState}
               title={"Grundbuchblatt"}
               valueState={landRegisterSheetState}
-              allowedCharsRegExp={/[^0-9A-Za-z]/g}
+              suggestions={landRegisterSheets}
+              allowedEndResults={landRegisterSheets}
+              allowedCharsRegExp={/[^0-9]/g}
               placeholder={"52124"}
             />
           </div>

@@ -1,6 +1,7 @@
 import { read, utils, WorkBook } from "xlsx";
 import { preRegistrationWorkbooks, ZipApiResponse } from "./types/global";
-import { EconomicEntities, federalStates, Property } from "./types/property";
+import { federalStates } from "./types/lists";
+import { EconomicEntities, Property } from "./types/property";
 
 export const getZipInfo = (zip: string, callback: Function) => {
   const getRequest = new XMLHttpRequest();
@@ -69,9 +70,12 @@ export const getfilledPreRegistrationWorkbook = (workbook: WorkBook, property: P
   utils.sheet_add_aoa(economicEntitySheet, [[property.houseNumber]], { origin: "I7" });
   utils.sheet_add_aoa(economicEntitySheet, [[property.ownershipStructure === 0 ? "0 [Alleineigentum einer natürlichen Person]" : "Not finished"]], { origin: "K7" });
 
+  if (property.multiCommunities) utils.sheet_add_aoa(economicEntitySheet, [[property.multiCommunities ? "1 [ja]" : "2 [nein]"]], { origin: `J7` });
+
   utils.sheet_add_aoa(areaOfTheLandSheet, [[property.propertyType ? property.propertyType /*  TODO: add other like above */ : "0 [unbebautes Grundstück]"]], {
     origin: "B7",
   });
+
   if (property.areaOfTheLand) {
     utils.sheet_add_aoa(areaOfTheLandSheet, [[property.areaOfTheLand[0].areaOfTheLand]], {
       origin: "C7",
@@ -99,7 +103,7 @@ export const getfilledPreRegistrationWorkbook = (workbook: WorkBook, property: P
       utils.sheet_add_aoa(parcelsSheet, [[parcel.containedInArea]], { origin: `B${index + 7}` });
       utils.sheet_add_aoa(parcelsSheet, [[parcel.community]], { origin: `C${index + 7}` });
       utils.sheet_add_aoa(parcelsSheet, [[parcel.parcel]], { origin: `D${index + 7}` });
-      utils.sheet_add_aoa(parcelsSheet, [[parcel.shareOfOwnership]], { origin: `E${index + 7}` });
+      utils.sheet_add_aoa(parcelsSheet, [[parcel.landRegisterSheet]], { origin: `E${index + 7}` });
       utils.sheet_add_aoa(parcelsSheet, [[parcel.corridor]], { origin: `F${index + 7}` });
       utils.sheet_add_aoa(parcelsSheet, [[parcel.parcelData.counter]], { origin: `G${index + 7}` });
       utils.sheet_add_aoa(parcelsSheet, [[parcel.parcelData.denominator]], { origin: `H${index + 7}` });

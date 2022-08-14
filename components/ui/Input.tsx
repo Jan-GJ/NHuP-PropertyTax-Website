@@ -33,13 +33,14 @@ const Input = ({
     let newIsCorrect = false;
     if (allowedEndResults) if (allowedEndResults.includes(value)) newIsCorrect = true; //TODO: for street name use google api to check this make special case for it so query street name with debounce
 
-    if (allowedEndResults) if (!allowedEndResults.includes(value)) newError = `${value} ist kein(e) ${title}`;
+    if (allowedEndResults && value.length > 0) if (!allowedEndResults.includes(value)) newError = `${value} ist kein(e) ${title}`;
 
     if (value.length === 0 && required) newError = "Dieses Feld ist erforderlich";
     setError(newError);
     setIsCorrect(newIsCorrect);
     if (!newError) setError("");
     if (!newIsCorrect) setIsCorrect(false);
+    if (!allowedEndResults && isCorrect) setIsCorrect(true);
   };
 
   const updateSuggestions = (value: string) => {
@@ -80,22 +81,23 @@ const Input = ({
               }
             }
         }}
+        readOnly={nonEditable}
         placeholder={placeholder}
         className={`focus:outline-none p-1 ${width}
         ${
           error
-            ? disabled
+            ? disabled || nonEditable
               ? "border-red-500/50 text-white/50"
               : "border-red-500"
             : isCorrect
-            ? disabled
+            ? disabled || nonEditable
               ? "border-accent/50 text-white/50"
               : "border-accent"
-            : disabled
+            : disabled || nonEditable
             ? "border-gray-500/50 text-white/50"
             : "border-gray-500"
         }
-          border-[3px] focus:border-accent`}
+          border-[3px]  ${!nonEditable ? "focus:border-accent" : ""}`}
         value={value}
         onChange={({ target }) => {
           if (!nonEditable) {
@@ -103,6 +105,10 @@ const Input = ({
             checkValue(target.value);
             updateSuggestions(target.value);
           }
+        }}
+        onClick={(event) => {
+          if (nonEditable) event.preventDefault();
+          return false;
         }}
         title={error ? error : ""}
         type={type}
